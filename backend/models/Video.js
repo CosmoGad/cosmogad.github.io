@@ -15,6 +15,7 @@ const VideoSchema = new mongoose.Schema({
     comments: [CommentSchema],
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 }, { timestamps: true });
+
 VideoSchema.index({ title: 'text', description: 'text' });
 
 module.exports = mongoose.model('Video', VideoSchema);

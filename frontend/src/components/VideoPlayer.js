@@ -1,37 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import './VideoPlayer.css';
-import { likeVideo, addComment } from '../api';
 
 function VideoPlayer({ video }) {
-    const [likes, setLikes] = useState(video.likes ? video.likes.length : 0);
-    const [comments, setComments] = useState(video.comments || []);
+    const [likes, setLikes] = useState(video.likes);
+    const [comments, setComments] = useState(video.comments);
     const [newComment, setNewComment] = useState('');
+    const videoRef = useRef(null);
 
-    const handleLike = async () => {
-        try {
-            const response = await likeVideo(video._id);
-            setLikes(response.data.likes);
-        } catch (error) {
-            console.error('Error liking video:', error);
-        }
+    const handleLike = () => {
+        setLikes(likes + 1);
     };
 
-    const handleComment = async (e) => {
+    const handleComment = (e) => {
         e.preventDefault();
         if (!newComment.trim()) return;
+        setComments([...comments, { text: newComment, user: { username: 'Anonymous' } }]);
+        setNewComment('');
+    };
 
-        try {
-            const response = await addComment(video._id, newComment);
-            setComments([...comments, response.data]);
-            setNewComment('');
-        } catch (error) {
-            console.error('Error adding comment:', error);
+    const togglePlay = () => {
+        if (videoRef.current.paused) {
+            videoRef.current.play();
+        } else {
+            videoRef.current.pause();
         }
     };
 
     return (
         <div className="video-player">
-            <video src={video.url} loop autoPlay muted playsInline />
+            <video
+                ref={videoRef}
+                src={video.url}
+                loop
+                onClick={togglePlay}
+                playsInline
+            />
             <div className="video-info">
                 <h2>{video.title}</h2>
                 <p>{video.description}</p>

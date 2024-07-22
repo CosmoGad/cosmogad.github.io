@@ -27,8 +27,6 @@ router.get('/', async (req, res) => {
             .populate('user', 'username')
             .sort({ createdAt: -1 });
 
-        console.log('Retrieved videos:', videos);
-
         const total = await Video.countDocuments(query);
 
         res.json({
@@ -39,19 +37,6 @@ router.get('/', async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching videos:', error);
-        res.status(500).json({ message: error.message });
-    }
-});
-
-// Получить одно видео по ID
-router.get('/:id', async (req, res) => {
-    try {
-        const video = await Video.findById(req.params.id).populate('user', 'username');
-        if (!video) {
-            return res.status(404).json({ message: 'Video not found' });
-        }
-        res.json(video);
-    } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
