@@ -1,0 +1,9 @@
+.video-feed-swiper {
+  height: 100vh;
+}
+
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
