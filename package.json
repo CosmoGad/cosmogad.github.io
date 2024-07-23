@@ -1,18 +1,14 @@
 {
   "name": "crypto-clips",
   "version": "1.0.1",
-  "private": true,
   "scripts": {
-    "start": "node app.js",
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
     "start:backend": "cd backend && npm start",
     "start:frontend": "cd frontend && npm start",
     "build": "cd frontend && npm run build",
-    "deploy": "gh-pages -d docs"
-  },
-  "dependencies": {
-    "express": "^4.17.1"
+    "install": "cd backend && npm install && cd ../frontend && npm install"
   },
   "devDependencies": {
-    "gh-pages": "^6.1.1"
+    "concurrently": "^6.2.0"
   }
 }

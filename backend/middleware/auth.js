@@ -1,5 +1,3 @@
-// C:\Users\13dan\crypto-clipsX2\backend\middleware\auth.js
-
 const User = require('../models/User');
 
 module.exports = async (req, res, next) => {

@@ -1,4 +1,3 @@
-// C:\Users\13dan\crypto-clipsX2\backend\routes\auth.js
 
 const express = require('express');
 const router = express.Router();
