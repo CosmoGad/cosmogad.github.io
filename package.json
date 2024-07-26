@@ -1,15 +1,15 @@
 {
   "name": "crypto-clips",
   "version": "1.0.1",
-  "homepage": "https://CosmoGad.github.io/crypto-clipsX2-new",
+  "homepage": "https://CosmoGad.github.io",
   "scripts": {
     "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
     "start:backend": "cd backend && npm start",
     "start:frontend": "cd frontend && npm start",
-    "build": "cd frontend && npm run build",
+    "build": "cd frontend && npm run build && cp -r build ../docs",
     "install": "cd backend && npm install && cd ../frontend && npm install",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d frontend/build"
+    "deploy": "gh-pages -d docs"
   },
   "devDependencies": {
     "concurrently": "^6.2.0",
