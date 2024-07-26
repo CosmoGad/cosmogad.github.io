@@ -136,14 +136,29 @@ body, html {
     bottom: 0;
     left: 0;
     width: 100%;
-    -webkit-appearance: none;
-    height: 5px;
-    background: rgba(255, 255, 255, 0.3);
-    outline: none;
-    z-index: 20;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    transition: height 0.3s ease;
 }
 
-.video-progress::-webkit-slider-thumb {
+.video-progress.visible {
+    height: 20px;
+}
+
+.video-progress input {
+    width: 100%;
+    -webkit-appearance: none;
+    background: transparent;
+    outline: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.video-progress.visible input {
+    opacity: 1;
+}
+
+.video-progress input::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 15px;
@@ -153,20 +168,20 @@ body, html {
     cursor: pointer;
 }
 
-.video-progress::-moz-range-thumb {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    background: white;
-    cursor: pointer;
+.comments-section {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    max-height: 50%;
+    overflow-y: auto;
 }
 
-@media (max-width: 768px) {
-    .pause-overlay {
-        font-size: 48px;
-    }
-
-    .app-version {
-        font-size: 10px;
-    }
+.comment {
+    margin-bottom: 10px;
+    padding: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }

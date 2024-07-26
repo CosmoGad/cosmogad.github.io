@@ -1,18 +1,42 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { FaHeart, FaComment, FaShare } from 'react-icons/fa';
 import '../styles/App.css';
 
-const APP_VERSION = "1.0.2"; // Добавьте актуальную версию
+const APP_VERSION = "1.0.4";
 
-function VideoPlayer({ video }) {
+function VideoPlayer({ video, onVideoEnd }) {
     const [isLiked, setIsLiked] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const [showComments, setShowComments] = useState(false);
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState('');
     const videoRef = useRef(null);
 
     useEffect(() => {
         if (videoRef.current) {
+            videoRef.current.currentTime = 0;
             videoRef.current.play().catch(error => console.log('Autoplay prevented:', error));
         }
     }, [video]);
+
+    useEffect(() => {
+        const updateProgress = () => {
+            if (videoRef.current) {
+                const progress = (videoRef.current.currentTime / videoRef.current.duration) * 100;
+                setProgress(progress);
+            }
+        };
+
+        const videoElement = videoRef.current;
+        videoElement.addEventListener('timeupdate', updateProgress);
+        videoElement.addEventListener('ended', onVideoEnd);
+
+        return () => {
+            videoElement.removeEventListener('timeupdate', updateProgress);
+            videoElement.removeEventListener('ended', onVideoEnd);
+        };
+    }, [onVideoEnd]);
 
     const toggleLike = () => {
         setIsLiked(!isLiked);
@@ -37,16 +61,39 @@ function VideoPlayer({ video }) {
         }
     };
 
-    if (!video) {
-        return <div>Loading...</div>;
-    }
+    const toggleComments = () => {
+        setShowComments(!showComments);
+    };
+
+    const addComment = (e) => {
+        e.preventDefault();
+        if (newComment.trim()) {
+            setComments([...comments, { id: Date.now(), text: newComment, likes: 0 }]);
+            setNewComment('');
+        }
+    };
+
+    const deleteComment = (id) => {
+        setComments(comments.filter(comment => comment.id !== id));
+    };
+
+    const likeComment = (id) => {
+        setComments(comments.map(comment =>
+            comment.id === id ? {...comment, likes: comment.likes + 1} : comment
+        ));
+    };
+
+    const shareVideo = () => {
+        // Здесь будет логика для шаринга видео
+        console.log('Sharing video:', video.url);
+    };
 
     return (
         <div className="video-player" onClick={togglePlay}>
             <video
                 ref={videoRef}
                 src={video.url}
-                loop
+                loop={false}
                 playsInline
                 muted
             />
@@ -57,20 +104,47 @@ function VideoPlayer({ video }) {
             </div>
             <div className="video-actions">
                 <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleLike(); }}>
-                    {isLiked ? '❤️' : '🤍'}
+                    <FaHeart color={isLiked ? 'red' : 'white'} />
                 </button>
-                <button className="action-button" onClick={(e) => e.stopPropagation()}>💬</button>
-                <button className="action-button" onClick={(e) => e.stopPropagation()}>↪️</button>
+                <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleComments(); }}>
+                    <FaComment />
+                </button>
+                <button className="action-button" onClick={(e) => { e.stopPropagation(); shareVideo(); }}>
+                    <FaShare />
+                </button>
             </div>
             <div className="app-version">v{APP_VERSION}</div>
-            <input
-                type="range"
-                min="0"
-                max="100"
-                className="video-progress"
-                onChange={handleSeek}
-                onClick={(e) => e.stopPropagation()}
-            />
+            <div className={`video-progress ${isPaused ? 'visible' : ''}`}>
+                <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={progress}
+                    onChange={handleSeek}
+                    onClick={(e) => e.stopPropagation()}
+                />
+            </div>
+            {showComments && (
+                <div className="comments-section" onClick={(e) => e.stopPropagation()}>
+                    <h3>Comments</h3>
+                    <form onSubmit={addComment}>
+                        <input
+                            type="text"
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            placeholder="Add a comment"
+                        />
+                        <button type="submit">Post</button>
+                    </form>
+                    {comments.map(comment => (
+                        <div key={comment.id} className="comment">
+                            <p>{comment.text}</p>
+                            <button onClick={() => likeComment(comment.id)}>Like ({comment.likes})</button>
+                            <button onClick={() => deleteComment(comment.id)}>Delete</button>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
