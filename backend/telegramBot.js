@@ -23,12 +23,14 @@ bot.command('start', async (ctx) => {
             });
             await user.save();
         }
+        const timestamp = Date.now();
+        const webAppUrl = `${process.env.WEBAPP_URL}?v=${timestamp}`;
         return ctx.reply('Добро пожаловать в CryptoClips!', {
             reply_markup: {
                 keyboard: [[
                     {
                         text: 'Открыть CryptoClips',
-                        web_app: { url: process.env.WEBAPP_URL }
+                        web_app: { url: webAppUrl }
                     }
                 ]],
                 resize_keyboard: true
@@ -39,6 +41,8 @@ bot.command('start', async (ctx) => {
         return ctx.reply('Произошла ошибка при авторизации. Попробуйте позже.');
     }
 });
+
+// ... остальной код бота
 
 bot.on('text', (ctx) => {
     return ctx.reply('Нажмите кнопку ниже, чтобы открыть CryptoClips:', {
