@@ -3,10 +3,12 @@ body, html {
   padding: 0;
   font-family: Arial, sans-serif;
   overflow: hidden;
+  width: 100%;
+  height: 100%;
 }
 
 .App {
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   overflow: hidden;
   background-color: #000;
@@ -40,11 +42,13 @@ body, html {
   left: 10px;
   color: white;
   z-index: 10;
+  max-width: 70%;
 }
 
 .username {
   font-weight: bold;
   margin-bottom: 5px;
+  font-size: 16px;
 }
 
 .video-description {
@@ -68,8 +72,101 @@ body, html {
   font-size: 24px;
   margin: 10px 0;
   cursor: pointer;
+  padding: 10px;
 }
 
 .action-button:focus {
   outline: none;
+}
+
+@media (max-width: 768px) {
+  .video-info {
+    bottom: 60px;
+  }
+
+  .video-actions {
+    bottom: 80px;
+    right: 5px;
+  }
+
+  .action-button {
+    font-size: 20px;
+    margin: 5px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .username {
+    font-size: 14px;
+  }
+
+  .video-description {
+    font-size: 12px;
+  }
+
+  .action-button {
+    font-size: 18px;
+  }
+}
+/* ... предыдущие стили ... */
+
+.pause-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 72px;
+    color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    padding: 20px;
+}
+
+.app-version {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    z-index: 10;
+}
+
+.video-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    -webkit-appearance: none;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.3);
+    outline: none;
+    z-index: 20;
+}
+
+.video-progress::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+}
+
+.video-progress::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .pause-overlay {
+        font-size: 48px;
+    }
+
+    .app-version {
+        font-size: 10px;
+    }
 }
