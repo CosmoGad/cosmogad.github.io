@@ -1,22 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import VideoPlayer from './VideoPlayer';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Mousewheel } from 'swiper';
 import 'swiper/swiper.min.css';
-import './VideoFeed.css';
+import '../styles/App.css';
 import { videoUrls } from '../data/videos';
 
 SwiperCore.use([Mousewheel]);
 
 function VideoFeed() {
-    const [videos] = useState(videoUrls.map((url, index) => ({
-        _id: index,
-        url,
-        title: `Video ${index + 1}`,
-        description: `This is video number ${index + 1}`,
-        likes: 0,
-        comments: []
-    })));
+    const [videos, setVideos] = useState([]);
+
+    useEffect(() => {
+        const videoObjects = videoUrls.map((url, index) => ({
+            _id: index,
+            url,
+            description: `This is video number ${index + 1} #fun #crypto`,
+        }));
+        setVideos(videoObjects);
+    }, []);
+
+    if (videos.length === 0) {
+        return <div>Loading videos...</div>;
+    }
 
     return (
         <Swiper

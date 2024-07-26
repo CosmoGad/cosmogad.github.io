@@ -1,54 +1,75 @@
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
+body, html {
   margin: 0;
   padding: 0;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
 }
 
 .App {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #000;
 }
 
-h1 {
-  text-align: center;
-  color: #333;
+.video-feed-swiper {
+  height: 100%;
+  width: 100%;
+}
+
+.swiper-slide {
+  overflow: hidden;
+  position: relative;
 }
 
 .video-player {
-  position: relative;
   width: 100%;
-  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  height: 100%;
+  position: relative;
 }
 
 .video-player video {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
+  object-fit: cover;
 }
 
 .video-info {
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 10px;
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 20px;
+  left: 10px;
+  color: white;
+  z-index: 10;
 }
 
-.like-button {
-  background-color: #4CAF50;
+.username {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.video-description {
+  font-size: 14px;
+}
+
+.video-actions {
+  position: absolute;
+  right: 10px;
+  bottom: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+}
+
+.action-button {
+  background: none;
   border: none;
   color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
+  font-size: 24px;
+  margin: 10px 0;
   cursor: pointer;
+}
+
+.action-button:focus {
+  outline: none;
 }

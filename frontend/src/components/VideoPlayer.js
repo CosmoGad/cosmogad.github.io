@@ -1,30 +1,33 @@
-import React, { useState, useRef } from 'react';
-import './VideoPlayer.css';
+import React, { useState, useRef, useEffect } from 'react';
+import '../styles/App.css';
 
 function VideoPlayer({ video }) {
-    const [likes, setLikes] = useState(video.likes);
-    const [comments, setComments] = useState(video.comments);
-    const [newComment, setNewComment] = useState('');
+    const [isLiked, setIsLiked] = useState(false);
     const videoRef = useRef(null);
 
-    const handleLike = () => {
-        setLikes(likes + 1);
-    };
+    useEffect(() => {
+        if (videoRef.current) {
+            videoRef.current.play();
+        }
+    }, [video]);
 
-    const handleComment = (e) => {
-        e.preventDefault();
-        if (!newComment.trim()) return;
-        setComments([...comments, { text: newComment, user: { username: 'Anonymous' } }]);
-        setNewComment('');
+    const toggleLike = () => {
+        setIsLiked(!isLiked);
     };
 
     const togglePlay = () => {
-        if (videoRef.current.paused) {
-            videoRef.current.play();
-        } else {
-            videoRef.current.pause();
+        if (videoRef.current) {
+            if (videoRef.current.paused) {
+                videoRef.current.play();
+            } else {
+                videoRef.current.pause();
+            }
         }
     };
+
+    if (!video) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className="video-player">
@@ -36,27 +39,15 @@ function VideoPlayer({ video }) {
                 playsInline
             />
             <div className="video-info">
-                <h2>{video.title}</h2>
-                <p>{video.description}</p>
-                <button onClick={handleLike}>Like ({likes})</button>
-                <div className="comments-section">
-                    <h3>Comments</h3>
-                    {comments.map((comment, index) => (
-                        <div key={index} className="comment">
-                            <p>{comment.text}</p>
-                            <small>By: {comment.user.username}</small>
-                        </div>
-                    ))}
-                    <form onSubmit={handleComment}>
-                        <input
-                            type="text"
-                            value={newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
-                            placeholder="Add a comment"
-                        />
-                        <button type="submit">Post</button>
-                    </form>
-                </div>
+                <div className="username">@user{video._id}</div>
+                <div className="video-description">{video.description}</div>
+            </div>
+            <div className="video-actions">
+                <button className="action-button" onClick={toggleLike}>
+                    {isLiked ? '❤️' : '🤍'}
+                </button>
+                <button className="action-button">💬</button>
+                <button className="action-button">↪️</button>
             </div>
         </div>
     );
