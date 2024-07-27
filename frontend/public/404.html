@@ -1,43 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="CryptoClips Web App"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <title>CryptoClips</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-</head>
-<body>
-    <div id="root">
-        <div id="videoContainer"></div>
-        <div class="video-controls">
-            <button id="likeButton" class="control-button"><i class="fas fa-heart"></i> <span id="likeCount">0</span></button>
-            <button id="commentButton" class="control-button"><i class="fas fa-comment"></i></button>
-            <button id="shareButton" class="control-button"><i class="fas fa-share"></i></button>
-        </div>
-        <div id="progressBar" class="progress-bar">
-                <div id="progress" class="progress"></div>
-        <div id="videoInfo" class="video-info">
-            <h2 class="video-title">Video Title</h2>
-            <p class="video-description">Video description goes here</p>
-            <p class="video-stats"><i class="fas fa-eye"></i> <span id="viewCount">0</span> views</p>
-        </div>
-    </div>
-    <div id="commentSection" class="comment-section">
-        <div class="comment-header">
-            <h3>Comments</h3>
-            <button id="closeComments" class="close-button"><i class="fas fa-times"></i></button>
-        </div>
-        <div id="commentList" class="comment-list"></div>
-        <div class="comment-input">
-            <textarea id="commentText" placeholder="Add a comment..."></textarea>
-            <button id="submitComment">Post</button>
-        </div>
-    </div>
-    <script src="app.js"></script>
-</body>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script>
+      window.addEventListener('load', function() {
+        document.body.addEventListener('touchmove', function(e) {
+          if (e.target.closest('.video-feed-swiper')) {
+            e.preventDefault();
+          }
+        }, { passive: false });
+      });
+    </script>
+  </body>
 </html>

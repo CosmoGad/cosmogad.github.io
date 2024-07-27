@@ -25,15 +25,14 @@ bot.command('start', async (ctx) => {
         }
         const timestamp = Date.now();
         const webAppUrl = `${process.env.WEBAPP_URL}?v=${timestamp}`;
-        return ctx.reply('Добро пожаловать в CryptoClips!', {
+        return ctx.reply('Добро пожаловать в CryptoClips! Нажмите кнопку ниже, чтобы открыть приложение.', {
             reply_markup: {
-                keyboard: [[
+                inline_keyboard: [[
                     {
                         text: 'Открыть CryptoClips',
                         web_app: { url: webAppUrl }
                     }
-                ]],
-                resize_keyboard: true
+                ]]
             }
         });
     } catch (error) {
@@ -42,24 +41,19 @@ bot.command('start', async (ctx) => {
     }
 });
 
-// ... остальной код бота
-
-bot.on('text', (ctx) => {
+bot.on('message', (ctx) => {
+    const timestamp = Date.now();
+    const webAppUrl = `${process.env.WEBAPP_URL}?v=${timestamp}`;
     return ctx.reply('Нажмите кнопку ниже, чтобы открыть CryptoClips:', {
         reply_markup: {
-            keyboard: [[
+            inline_keyboard: [[
                 {
                     text: 'Открыть CryptoClips',
-                    web_app: { url: process.env.WEBAPP_URL }
+                    web_app: { url: webAppUrl }
                 }
-            ]],
-            resize_keyboard: true
+            ]]
         }
     });
-});
-
-bot.catch((err, ctx) => {
-    console.error(`Ошибка для ${ctx.updateType}:`, err);
 });
 
 module.exports = bot;
