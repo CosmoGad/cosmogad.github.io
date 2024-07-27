@@ -7,26 +7,17 @@
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="CryptoClips Web App"
+      content="CryptoClips - Watch and earn tokens"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <title>CryptoClips</title>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script>
-      window.addEventListener('load', function() {
-        document.body.addEventListener('touchmove', function(e) {
-          if (e.target.closest('.video-feed-swiper')) {
-            e.preventDefault();
-          }
-        }, { passive: false });
-      });
+      window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.expand();
     </script>
   </body>
 </html>

@@ -3,7 +3,7 @@ import { FaHeart, FaComment, FaShare } from 'react-icons/fa';
 import Comments from './Comments';
 import '../styles/VideoPlayer.css';
 
-const APP_VERSION = "1.0.9"; // Обновляем версию
+const APP_VERSION = "1.1.0"; // Обновляем версию
 
 function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned }) {
   const [showInfo, setShowInfo] = useState(false);

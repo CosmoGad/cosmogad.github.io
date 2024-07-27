@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import VideoPlayer from './VideoPlayer';
-import TokenInfo from './TokenInfo';
+import Sidebar from './Sidebar';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import SwiperCore, { Mousewheel, Virtual } from 'swiper';
+import SwiperCore, { Mousewheel } from 'swiper';
 import 'swiper/swiper.min.css';
 import '../styles/VideoFeed.css';
 import { videoUrls } from '../data/videos';
 
-SwiperCore.use([Mousewheel, Virtual]);
+SwiperCore.use([Mousewheel]);
 
 function VideoFeed() {
   const [videos, setVideos] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [tokenBalance, setTokenBalance] = useState(0);
-  const swiperRef = useRef(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const videoObjects = videoUrls.map((url, index) => ({
@@ -30,13 +30,22 @@ function VideoFeed() {
     }
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   if (videos.length === 0) {
     return <div>Loading videos...</div>;
   }
 
   return (
     <div className="video-feed-container">
-      <TokenInfo balance={tokenBalance} />
+      <button className="sidebar-toggle" onClick={toggleSidebar}>☰</button>
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        tokenBalance={tokenBalance}
+      />
       <Swiper
         direction={'vertical'}
         slidesPerView={1}
