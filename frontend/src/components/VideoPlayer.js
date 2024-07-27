@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FaHeart, FaComment, FaShare } from 'react-icons/fa';
 import '../styles/App.css';
 
-const APP_VERSION = "1.0.4";
+const APP_VERSION = "1.0.5";
 
 function VideoPlayer({ video, onVideoEnd }) {
     const [isLiked, setIsLiked] = useState(false);

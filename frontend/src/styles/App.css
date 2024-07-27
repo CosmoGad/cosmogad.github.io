@@ -184,4 +184,12 @@ body, html {
     margin-bottom: 10px;
     padding: 5px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  }
+}
+
+.video-feed-swiper {
+    touch-action: pan-y;
+}
+
+.swiper-slide-active {
+    touch-action: pan-x pan-y;
+}
