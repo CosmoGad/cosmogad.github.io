@@ -1,16 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaHeart, FaComment, FaShare } from 'react-icons/fa';
-import '../styles/App.css';
+import Comments from './Comments';
+import '../styles/VideoPlayer.css';
 
-const APP_VERSION = "1.0.5";
+const APP_VERSION = "1.0.7"; // Обновляем версию
 
 function VideoPlayer({ video, onVideoEnd }) {
     const [isLiked, setIsLiked] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const [progress, setProgress] = useState(0);
     const [showComments, setShowComments] = useState(false);
-    const [comments, setComments] = useState([]);
-    const [newComment, setNewComment] = useState('');
     const videoRef = useRef(null);
 
     useEffect(() => {
@@ -65,37 +64,20 @@ function VideoPlayer({ video, onVideoEnd }) {
         setShowComments(!showComments);
     };
 
-    const addComment = (e) => {
-        e.preventDefault();
-        if (newComment.trim()) {
-            setComments([...comments, { id: Date.now(), text: newComment, likes: 0 }]);
-            setNewComment('');
-        }
-    };
-
-    const deleteComment = (id) => {
-        setComments(comments.filter(comment => comment.id !== id));
-    };
-
-    const likeComment = (id) => {
-        setComments(comments.map(comment =>
-            comment.id === id ? {...comment, likes: comment.likes + 1} : comment
-        ));
-    };
-
     const shareVideo = () => {
         // Здесь будет логика для шаринга видео
         console.log('Sharing video:', video.url);
     };
 
     return (
-        <div className="video-player" onClick={togglePlay}>
+        <div className="video-player">
             <video
                 ref={videoRef}
                 src={video.url}
                 loop={false}
                 playsInline
                 muted
+                onClick={togglePlay}
             />
             {isPaused && <div className="pause-overlay">⏸</div>}
             <div className="video-info">
@@ -103,13 +85,13 @@ function VideoPlayer({ video, onVideoEnd }) {
                 <div className="video-description">{video.description}</div>
             </div>
             <div className="video-actions">
-                <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleLike(); }}>
+                <button className="action-button" onClick={toggleLike}>
                     <FaHeart color={isLiked ? 'red' : 'white'} />
                 </button>
-                <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleComments(); }}>
+                <button className="action-button" onClick={toggleComments}>
                     <FaComment />
                 </button>
-                <button className="action-button" onClick={(e) => { e.stopPropagation(); shareVideo(); }}>
+                <button className="action-button" onClick={shareVideo}>
                     <FaShare />
                 </button>
             </div>
@@ -125,25 +107,11 @@ function VideoPlayer({ video, onVideoEnd }) {
                 />
             </div>
             {showComments && (
-                <div className="comments-section" onClick={(e) => e.stopPropagation()}>
-                    <h3>Comments</h3>
-                    <form onSubmit={addComment}>
-                        <input
-                            type="text"
-                            value={newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
-                            placeholder="Add a comment"
-                        />
-                        <button type="submit">Post</button>
-                    </form>
-                    {comments.map(comment => (
-                        <div key={comment.id} className="comment">
-                            <p>{comment.text}</p>
-                            <button onClick={() => likeComment(comment.id)}>Like ({comment.likes})</button>
-                            <button onClick={() => deleteComment(comment.id)}>Delete</button>
-                        </div>
-                    ))}
-                </div>
+                <Comments
+                    videoId={video._id}
+                    comments={video.comments || []}
+                    onClose={toggleComments}
+                />
             )}
         </div>
     );
