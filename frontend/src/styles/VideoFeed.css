@@ -1,59 +1,17 @@
-.video-feed-swiper {
+.video-feed-container {
   height: 100vh;
   width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.video-feed-swiper {
+  height: 100%;
+  width: 100%;
 }
 
 .swiper-slide {
-  overflow: hidden;
-  position: relative;
-}
-
-.video-player {
-  width: 100%;
   height: 100%;
-  object-fit: cover;
-}
-
-.video-info {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 20px;
-  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
-  color: white;
-}
-
-.video-actions {
-  position: absolute;
-  right: 10px;
-  bottom: 100px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.action-button {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 24px;
-  margin: 10px 0;
-  cursor: pointer;
-}
-
-.user-info {
-  position: absolute;
-  bottom: 20px;
-  left: 10px;
-}
-
-.username {
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.video-description {
-  margin-top: 5px;
-  font-size: 14px;
+  width: 100%;
 }

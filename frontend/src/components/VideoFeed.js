@@ -24,33 +24,9 @@ function VideoFeed() {
     setVideos(videoObjects);
   }, []);
 
-  useEffect(() => {
-    if (swiperRef.current && swiperRef.current.swiper) {
-      swiperRef.current.swiper.slideTo(1, 0);
-    }
-  }, [videos]);
-
   const handleVideoEnd = () => {
     if (currentIndex < videos.length - 1) {
       setCurrentIndex(currentIndex + 1);
-    }
-  };
-
-  const handleTouchStart = (e) => {
-    if (currentIndex === 0) {
-      const touch = e.touches[0];
-      swiperRef.current.touchStartY = touch.clientY;
-    }
-  };
-
-  const handleTouchMove = (e) => {
-    if (currentIndex === 0) {
-      const touch = e.touches[0];
-      const deltaY = touch.clientY - swiperRef.current.touchStartY;
-      if (deltaY > 0) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
     }
   };
 
@@ -66,15 +42,11 @@ function VideoFeed() {
         slidesPerView={1}
         spaceBetween={0}
         mousewheel={true}
-        virtual
         className="video-feed-swiper"
         onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        ref={swiperRef}
       >
         {videos.map((video, index) => (
-          <SwiperSlide key={video._id} virtualIndex={index}>
+          <SwiperSlide key={video._id}>
             <VideoPlayer
               video={video}
               onVideoEnd={handleVideoEnd}
