@@ -1,120 +1,86 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { FaHeart, FaComment, FaShare } from 'react-icons/fa';
-import Comments from './Comments';
-import '../styles/VideoPlayer.css';
+import React, { useState, useEffect, useRef } from 'react';
+import VideoPlayer from './VideoPlayer';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import SwiperCore, { Mousewheel, Virtual } from 'swiper';
+import 'swiper/swiper.min.css';
+import '../styles/App.css';
+import { videoUrls } from '../data/videos';
+const APP_VERSION = "1.0.8"; // Обновляем версию
 
-const APP_VERSION = "1.0.7"; // Обновляем версию
+SwiperCore.use([Mousewheel, Virtual]);
 
-function VideoPlayer({ video, onVideoEnd }) {
-    const [isLiked, setIsLiked] = useState(false);
-    const [isPaused, setIsPaused] = useState(false);
-    const [progress, setProgress] = useState(0);
-    const [showComments, setShowComments] = useState(false);
-    const videoRef = useRef(null);
-
-    useEffect(() => {
-        if (videoRef.current) {
-            videoRef.current.currentTime = 0;
-            videoRef.current.play().catch(error => console.log('Autoplay prevented:', error));
-        }
-    }, [video]);
+function VideoFeed() {
+    const [videos, setVideos] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const swiperRef = useRef(null);
 
     useEffect(() => {
-        const updateProgress = () => {
-            if (videoRef.current) {
-                const progress = (videoRef.current.currentTime / videoRef.current.duration) * 100;
-                setProgress(progress);
-            }
-        };
+        const videoObjects = videoUrls.map((url, index) => ({
+            _id: index,
+            url,
+            description: `This is video number ${index + 1} #fun #crypto`,
+        }));
+        setVideos(videoObjects);
+    }, []);
 
-        const videoElement = videoRef.current;
-        videoElement.addEventListener('timeupdate', updateProgress);
-        videoElement.addEventListener('ended', onVideoEnd);
+    useEffect(() => {
+        if (swiperRef.current && swiperRef.current.swiper) {
+            swiperRef.current.swiper.slideTo(1, 0);
+        }
+    }, [videos]);
 
-        return () => {
-            videoElement.removeEventListener('timeupdate', updateProgress);
-            videoElement.removeEventListener('ended', onVideoEnd);
-        };
-    }, [onVideoEnd]);
-
-    const toggleLike = () => {
-        setIsLiked(!isLiked);
+    const handleVideoEnd = () => {
+        if (currentIndex < videos.length - 1) {
+            setCurrentIndex(currentIndex + 1);
+        }
     };
 
-    const togglePlay = () => {
-        if (videoRef.current) {
-            if (videoRef.current.paused) {
-                videoRef.current.play().catch(error => console.log('Play prevented:', error));
-                setIsPaused(false);
-            } else {
-                videoRef.current.pause();
-                setIsPaused(true);
+    const handleTouchStart = (e) => {
+        if (currentIndex === 0) {
+            const touch = e.touches[0];
+            swiperRef.current.touchStartY = touch.clientY;
+        }
+    };
+
+    const handleTouchMove = (e) => {
+        if (currentIndex === 0) {
+            const touch = e.touches[0];
+            const deltaY = touch.clientY - swiperRef.current.touchStartY;
+            if (deltaY > 0) {
+                e.preventDefault();
+                e.stopPropagation();
             }
         }
     };
 
-    const handleSeek = (e) => {
-        const seekPosition = e.target.value;
-        if (videoRef.current) {
-            videoRef.current.currentTime = (seekPosition / 100) * videoRef.current.duration;
-        }
-    };
-
-    const toggleComments = () => {
-        setShowComments(!showComments);
-    };
-
-    const shareVideo = () => {
-        // Здесь будет логика для шаринга видео
-        console.log('Sharing video:', video.url);
-    };
+    if (videos.length === 0) {
+        return <div>Loading videos...</div>;
+    }
 
     return (
-        <div className="video-player">
-            <video
-                ref={videoRef}
-                src={video.url}
-                loop={false}
-                playsInline
-                muted
-                onClick={togglePlay}
-            />
-            {isPaused && <div className="pause-overlay">⏸</div>}
-            <div className="video-info">
-                <div className="username">@user{video._id}</div>
-                <div className="video-description">{video.description}</div>
-            </div>
-            <div className="video-actions">
-                <button className="action-button" onClick={toggleLike}>
-                    <FaHeart color={isLiked ? 'red' : 'white'} />
-                </button>
-                <button className="action-button" onClick={toggleComments}>
-                    <FaComment />
-                </button>
-                <button className="action-button" onClick={shareVideo}>
-                    <FaShare />
-                </button>
-            </div>
-            <div className="app-version">v{APP_VERSION}</div>
-            <div className={`video-progress ${isPaused ? 'visible' : ''}`}>
-                <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={progress}
-                    onChange={handleSeek}
-                    onClick={(e) => e.stopPropagation()}
-                />
-            </div>
-            {showComments && (
-                <Comments
-                    videoId={video._id}
-                    comments={video.comments || []}
-                    onClose={toggleComments}
-                />
-            )}
-        </div>
+        <Swiper
+            direction={'vertical'}
+            slidesPerView={1}
+            spaceBetween={0}
+            mousewheel={true}
+            virtual
+            className="video-feed-swiper"
+            onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            ref={swiperRef}
+        >
+            {videos.map((video, index) => (
+                <SwiperSlide key={video._id} virtualIndex={index}>
+                    <VideoPlayer
+                        video={video}
+                        onVideoEnd={handleVideoEnd}
+                        isActive={index === currentIndex}
+                    />
+                </SwiperSlide>
+            ))}
+        </Swiper>
     );
 }
 
-export default VideoPlayer;
+export default VideoFeed;

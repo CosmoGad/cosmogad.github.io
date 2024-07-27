@@ -1,6 +1,6 @@
 {
   "name": "crypto-clips-frontend",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "homepage": "https://cosmogad.github.io",
   "scripts": {
     "start": "react-scripts start",
