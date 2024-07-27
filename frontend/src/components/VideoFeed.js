@@ -10,6 +10,7 @@ SwiperCore.use([Mousewheel]);
 
 function VideoFeed() {
     const [videos, setVideos] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
         const videoObjects = videoUrls.map((url, index) => ({
@@ -19,6 +20,12 @@ function VideoFeed() {
         }));
         setVideos(videoObjects);
     }, []);
+
+    const handleVideoEnd = () => {
+        if (currentIndex < videos.length - 1) {
+            setCurrentIndex(currentIndex + 1);
+        }
+    };
 
     if (videos.length === 0) {
         return <div>Loading videos...</div>;
@@ -31,10 +38,15 @@ function VideoFeed() {
             spaceBetween={0}
             mousewheel={true}
             className="video-feed-swiper"
+            onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
         >
-            {videos.map((video) => (
+            {videos.map((video, index) => (
                 <SwiperSlide key={video._id}>
-                    <VideoPlayer video={video} />
+                    <VideoPlayer
+                        video={video}
+                        onVideoEnd={handleVideoEnd}
+                        isActive={index === currentIndex}
+                    />
                 </SwiperSlide>
             ))}
         </Swiper>
