@@ -36,6 +36,10 @@ function VideoFeed() {
     }));
   };
 
+  const handleTokenEarned = (amount) => {
+    setTokenBalance(prev => prev + amount);
+  };
+
   if (videos.length === 0) {
     return <div>Loading videos...</div>;
   }
@@ -56,9 +60,10 @@ function VideoFeed() {
               video={video}
               onVideoEnd={handleVideoEnd}
               isActive={index === currentIndex}
-              onTokenEarned={(amount) => setTokenBalance(prev => prev + amount)}
+              onTokenEarned={handleTokenEarned}
               comments={comments[video._id] || []}
               onCommentAdd={handleCommentAdd}
+              tokenBalance={tokenBalance}
             />
           </SwiperSlide>
         ))}
