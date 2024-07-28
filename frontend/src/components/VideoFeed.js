@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import VideoPlayer from './VideoPlayer';
-import Sidebar from './Sidebar';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Mousewheel } from 'swiper';
 import 'swiper/swiper.min.css';
@@ -13,7 +12,7 @@ function VideoFeed() {
   const [videos, setVideos] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [tokenBalance, setTokenBalance] = useState(0);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [comments, setComments] = useState({});
 
   useEffect(() => {
     const videoObjects = videoUrls.map((url, index) => ({
@@ -30,8 +29,11 @@ function VideoFeed() {
     }
   };
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+  const handleCommentAdd = (videoId, newComment) => {
+    setComments(prev => ({
+      ...prev,
+      [videoId]: [...(prev[videoId] || []), newComment]
+    }));
   };
 
   if (videos.length === 0) {
@@ -40,12 +42,6 @@ function VideoFeed() {
 
   return (
     <div className="video-feed-container">
-      <button className="sidebar-toggle" onClick={toggleSidebar}>☰</button>
-      <Sidebar
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
-        tokenBalance={tokenBalance}
-      />
       <Swiper
         direction={'vertical'}
         slidesPerView={1}
@@ -61,6 +57,8 @@ function VideoFeed() {
               onVideoEnd={handleVideoEnd}
               isActive={index === currentIndex}
               onTokenEarned={(amount) => setTokenBalance(prev => prev + amount)}
+              comments={comments[video._id] || []}
+              onCommentAdd={handleCommentAdd}
             />
           </SwiperSlide>
         ))}

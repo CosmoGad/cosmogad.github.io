@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Comments.css';
 
-function Comments({ videoId, comments: initialComments, onClose }) {
-  const [comments, setComments] = useState(initialComments);
+function Comments({ videoId, comments, onClose, onAddComment }) {
   const [newComment, setNewComment] = useState('');
 
   useEffect(() => {
@@ -15,7 +14,7 @@ function Comments({ videoId, comments: initialComments, onClose }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (newComment.trim()) {
-      setComments([...comments, { id: Date.now(), text: newComment, user: 'Anonymous' }]);
+      onAddComment({ id: Date.now(), text: newComment, user: 'Anonymous' });
       setNewComment('');
     }
   };

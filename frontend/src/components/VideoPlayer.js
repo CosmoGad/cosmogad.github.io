@@ -4,16 +4,14 @@ import { BsPauseFill } from 'react-icons/bs';
 import Comments from './Comments';
 import '../styles/VideoPlayer.css';
 
-const APP_VERSION = "1.1.2"; // Обновляем версию
+const APP_VERSION = "1.1.3"; // Обновляем версию
 
-function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned }) {
+function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, comments, onCommentAdd }) {
   const [showInfo, setShowInfo] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const videoRef = useRef(null);
-  const touchStartRef = useRef(null);
-  const touchStartTimeRef = useRef(null);
 
   useEffect(() => {
     setShowInfo(isActive);
@@ -74,40 +72,8 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned }) {
     console.log('Sharing video:', video.url);
   };
 
-  const handleTouchStart = (e) => {
-    touchStartRef.current = e.touches[0].clientX;
-    touchStartTimeRef.current = Date.now();
-  };
-
-  const handleTouchMove = (e) => {
-    if (!touchStartRef.current) return;
-
-    const touchDuration = Date.now() - touchStartTimeRef.current;
-    if (touchDuration < 1500) return; // Меньше 1.5 секунд
-
-    const touchEnd = e.touches[0].clientX;
-    const diff = touchStartRef.current - touchEnd;
-
-    if (Math.abs(diff) < 50) return; // Минимальное расстояние для свайпа
-
-    const videoDuration = videoRef.current.duration;
-    const seekAmount = (diff / window.innerWidth) * videoDuration * 0.1; // 10% от длительности видео
-    videoRef.current.currentTime += seekAmount;
-
-    touchStartRef.current = touchEnd;
-  };
-
-  const handleTouchEnd = () => {
-    touchStartRef.current = null;
-    touchStartTimeRef.current = null;
-  };
-
   return (
-    <div className="video-player"
-         onClick={togglePlay}
-         onTouchStart={handleTouchStart}
-         onTouchMove={handleTouchMove}
-         onTouchEnd={handleTouchEnd}>
+    <div className="video-player" onClick={togglePlay}>
       <video
         ref={videoRef}
         src={video.url}
@@ -137,8 +103,9 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned }) {
       {showComments && (
         <Comments
           videoId={video._id}
-          comments={video.comments || []}
+          comments={comments}
           onClose={toggleComments}
+          onAddComment={(newComment) => onCommentAdd(video._id, newComment)}
         />
       )}
     </div>
