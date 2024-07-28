@@ -1,51 +1,49 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/Comments.css';
 
 function Comments({ videoId, comments: initialComments, onClose }) {
-    const [comments, setComments] = useState(initialComments);
-    const [newComment, setNewComment] = useState('');
-    const commentsRef = useRef(null);
+  const [comments, setComments] = useState(initialComments);
+  const [newComment, setNewComment] = useState('');
 
-    useEffect(() => {
-        if (commentsRef.current) {
-            commentsRef.current.scrollTop = commentsRef.current.scrollHeight;
-        }
-    }, [comments]);
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (newComment.trim()) {
-            setComments([...comments, { id: Date.now(), text: newComment, user: 'Anonymous' }]);
-            setNewComment('');
-        }
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'auto';
     };
+  }, []);
 
-    return (
-        <div className="comments-overlay">
-            <div className="comments-container">
-                <div className="comments-header">
-                    <h3>Comments</h3>
-                    <button onClick={onClose}>Close</button>
-                </div>
-                <div className="comments-list" ref={commentsRef}>
-                    {comments.map((comment) => (
-                        <div key={comment.id} className="comment">
-                            <strong>{comment.user}</strong>: {comment.text}
-                        </div>
-                    ))}
-                </div>
-                <form onSubmit={handleSubmit} className="comment-form">
-                    <input
-                        type="text"
-                        value={newComment}
-                        onChange={(e) => setNewComment(e.target.value)}
-                        placeholder="Add a comment..."
-                    />
-                    <button type="submit">Post</button>
-                </form>
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (newComment.trim()) {
+      setComments([...comments, { id: Date.now(), text: newComment, user: 'Anonymous' }]);
+      setNewComment('');
+    }
+  };
+
+  return (
+    <div className="comments-overlay" onClick={onClose}>
+      <div className="comments-container" onClick={e => e.stopPropagation()}>
+        <button className="close-button" onClick={onClose}>×</button>
+        <h3>Comments</h3>
+        <div className="comments-list">
+          {comments.map(comment => (
+            <div key={comment.id} className="comment">
+              <strong>{comment.user}</strong>: {comment.text}
             </div>
+          ))}
         </div>
-    );
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Add a comment..."
+          />
+          <button type="submit">Post</button>
+        </form>
+      </div>
+    </div>
+  );
 }
 
 export default Comments;

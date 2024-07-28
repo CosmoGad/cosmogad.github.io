@@ -1,17 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaHeart, FaComment, FaShare } from 'react-icons/fa';
+import { BsPauseFill } from 'react-icons/bs';
 import Comments from './Comments';
 import '../styles/VideoPlayer.css';
 
-const APP_VERSION = "1.1.0"; // Обновляем версию
+const APP_VERSION = "1.1.2"; // Обновляем версию
 
 function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned }) {
   const [showInfo, setShowInfo] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [showComments, setShowComments] = useState(false);
   const videoRef = useRef(null);
+  const touchStartRef = useRef(null);
+  const touchStartTimeRef = useRef(null);
 
   useEffect(() => {
     setShowInfo(isActive);
@@ -25,19 +27,10 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned }) {
   }, [video, isActive]);
 
   useEffect(() => {
-    const updateProgress = () => {
-      if (videoRef.current) {
-        const progress = (videoRef.current.currentTime / videoRef.current.duration) * 100;
-        setProgress(progress);
-      }
-    };
-
     const videoElement = videoRef.current;
-    videoElement.addEventListener('timeupdate', updateProgress);
     videoElement.addEventListener('ended', onVideoEnd);
 
     return () => {
-      videoElement.removeEventListener('timeupdate', updateProgress);
       videoElement.removeEventListener('ended', onVideoEnd);
     };
   }, [onVideoEnd]);
@@ -46,7 +39,6 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned }) {
     let interval;
     if (isActive && !isPaused) {
       interval = setInterval(() => {
-        // Начисляем токены каждые 5 секунд просмотра
         const earnedTokens = calculateEarnedTokens(5);
         onTokenEarned(earnedTokens);
       }, 5000);
@@ -55,8 +47,6 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned }) {
   }, [isActive, isPaused, onTokenEarned]);
 
   const calculateEarnedTokens = (watchedSeconds) => {
-    // Здесь реализуйте вашу формулу начисления токенов
-    // Это упрощенный пример
     return (watchedSeconds / 60) * 0.1;
   };
 
@@ -76,13 +66,6 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned }) {
     }
   };
 
-  const handleSeek = (e) => {
-    const seekPosition = e.target.value;
-    if (videoRef.current) {
-      videoRef.current.currentTime = (seekPosition / 100) * videoRef.current.duration;
-    }
-  };
-
   const toggleComments = () => {
     setShowComments(!showComments);
   };
@@ -91,17 +74,48 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned }) {
     console.log('Sharing video:', video.url);
   };
 
+  const handleTouchStart = (e) => {
+    touchStartRef.current = e.touches[0].clientX;
+    touchStartTimeRef.current = Date.now();
+  };
+
+  const handleTouchMove = (e) => {
+    if (!touchStartRef.current) return;
+
+    const touchDuration = Date.now() - touchStartTimeRef.current;
+    if (touchDuration < 1500) return; // Меньше 1.5 секунд
+
+    const touchEnd = e.touches[0].clientX;
+    const diff = touchStartRef.current - touchEnd;
+
+    if (Math.abs(diff) < 50) return; // Минимальное расстояние для свайпа
+
+    const videoDuration = videoRef.current.duration;
+    const seekAmount = (diff / window.innerWidth) * videoDuration * 0.1; // 10% от длительности видео
+    videoRef.current.currentTime += seekAmount;
+
+    touchStartRef.current = touchEnd;
+  };
+
+  const handleTouchEnd = () => {
+    touchStartRef.current = null;
+    touchStartTimeRef.current = null;
+  };
+
   return (
-    <div className="video-player">
+    <div className="video-player"
+         onClick={togglePlay}
+         onTouchStart={handleTouchStart}
+         onTouchMove={handleTouchMove}
+         onTouchEnd={handleTouchEnd}>
       <video
         ref={videoRef}
         src={video.url}
         loop={false}
         playsInline
         muted
-        onClick={togglePlay}
       />
-      {isPaused && <div className="pause-overlay">⏸</div>}
+      {isPaused && <div className="pause-overlay"><BsPauseFill /></div>}
       {showInfo && (
         <div className="video-info">
           <div className="username">@user{video._id}</div>
@@ -109,27 +123,17 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned }) {
         </div>
       )}
       <div className="video-actions">
-        <button className="action-button" onClick={toggleLike}>
+        <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleLike(); }}>
           <FaHeart color={isLiked ? 'red' : 'white'} />
         </button>
-        <button className="action-button" onClick={toggleComments}>
+        <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleComments(); }}>
           <FaComment />
         </button>
-        <button className="action-button" onClick={shareVideo}>
+        <button className="action-button" onClick={(e) => { e.stopPropagation(); shareVideo(); }}>
           <FaShare />
         </button>
       </div>
       <div className="app-version">v{APP_VERSION}</div>
-      <div className={`video-progress ${isPaused ? 'visible' : ''}`}>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={progress}
-          onChange={handleSeek}
-          onClick={(e) => e.stopPropagation()}
-        />
-      </div>
       {showComments && (
         <Comments
           videoId={video._id}
