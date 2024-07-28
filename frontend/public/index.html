@@ -4,6 +4,10 @@
     <script>
   window.Telegram.WebApp.expand();
   window.Telegram.WebApp.enableClosingConfirmation();
+
+  document.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+  }, { passive: false });
 </script>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />

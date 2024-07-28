@@ -3,13 +3,14 @@ import { FaHeart, FaComment, FaShare, FaCoins } from 'react-icons/fa';
 import { BsPauseFill } from 'react-icons/bs';
 import '../styles/VideoPlayer.css';
 
-const APP_VERSION = "1.1.6"; // Обновляем версию
+const APP_VERSION = "1.1.7"; // Обновляем версию
 
 function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComments, toggleTokenInfo }) {
   const [showInfo, setShowInfo] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const videoRef = useRef(null);
+  const touchStartRef = useRef(null);
 
   useEffect(() => {
     setShowInfo(isActive);
@@ -68,8 +69,32 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComment
     console.log('Sharing video:', video.url);
   };
 
+  const handleTouchStart = (e) => {
+    touchStartRef.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e) => {
+    if (!touchStartRef.current) return;
+    const touchEnd = e.touches[0].clientY;
+    const diff = touchStartRef.current - touchEnd;
+
+    if (diff < -50 && video._id === 0) {
+      e.preventDefault();
+    }
+  };
+
+  const handleTouchEnd = () => {
+    touchStartRef.current = null;
+  };
+
   return (
-    <div className="video-player" onClick={togglePlay}>
+    <div
+      className="video-player"
+      onClick={togglePlay}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       <video
         ref={videoRef}
         src={video.url}

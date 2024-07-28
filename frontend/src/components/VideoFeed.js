@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import VideoPlayer from './VideoPlayer';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import SwiperCore, { Mousewheel } from 'swiper';
+import SwiperCore, { Mousewheel, Virtual } from 'swiper';
 import Comments from './Comments';
 import TokenInfo from './TokenInfo';
 import 'swiper/swiper.min.css';
 import '../styles/VideoFeed.css';
 import { videoUrls } from '../data/videos';
 
-SwiperCore.use([Mousewheel]);
+SwiperCore.use([Mousewheel, Virtual]);
 
 function VideoFeed() {
   const [videos, setVideos] = useState([]);
@@ -54,17 +54,18 @@ function VideoFeed() {
   };
 
   const handleTouchStart = (e) => {
-    const touch = e.touches[0];
-    swiperRef.current.touchStartY = touch.clientY;
+    if (currentIndex === 0) {
+      const touch = e.touches[0];
+      swiperRef.current.touchStartY = touch.clientY;
+    }
   };
 
   const handleTouchMove = (e) => {
     if (currentIndex === 0) {
       const touch = e.touches[0];
       const deltaY = touch.clientY - swiperRef.current.touchStartY;
-      if (deltaY > 0) {
+      if (deltaY > 50) {
         e.preventDefault();
-        e.stopPropagation();
       }
     }
   };
@@ -80,14 +81,15 @@ function VideoFeed() {
         slidesPerView={1}
         spaceBetween={0}
         mousewheel={true}
+        virtual
         className="video-feed-swiper"
         onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        ref={swiperRef}
+        onSwiper={(swiper) => {
+          swiperRef.current = swiper;
+        }}
       >
         {videos.map((video, index) => (
-          <SwiperSlide key={video._id}>
+          <SwiperSlide key={video._id} virtualIndex={index}>
             <VideoPlayer
               video={video}
               onVideoEnd={handleVideoEnd}
