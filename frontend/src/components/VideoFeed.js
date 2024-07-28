@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import VideoPlayer from './VideoPlayer';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Mousewheel } from 'swiper';
+import Comments from './Comments';
+import TokenInfo from './TokenInfo';
 import 'swiper/swiper.min.css';
 import '../styles/VideoFeed.css';
 import { videoUrls } from '../data/videos';
@@ -13,6 +15,9 @@ function VideoFeed() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [tokenBalance, setTokenBalance] = useState(0);
   const [comments, setComments] = useState({});
+  const [showComments, setShowComments] = useState(false);
+  const [showTokenInfo, setShowTokenInfo] = useState(false);
+  const swiperRef = useRef(null);
 
   useEffect(() => {
     const videoObjects = videoUrls.map((url, index) => ({
@@ -40,6 +45,30 @@ function VideoFeed() {
     setTokenBalance(prev => prev + amount);
   };
 
+  const toggleComments = () => {
+    setShowComments(!showComments);
+  };
+
+  const toggleTokenInfo = () => {
+    setShowTokenInfo(!showTokenInfo);
+  };
+
+  const handleTouchStart = (e) => {
+    const touch = e.touches[0];
+    swiperRef.current.touchStartY = touch.clientY;
+  };
+
+  const handleTouchMove = (e) => {
+    if (currentIndex === 0) {
+      const touch = e.touches[0];
+      const deltaY = touch.clientY - swiperRef.current.touchStartY;
+      if (deltaY > 0) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }
+  };
+
   if (videos.length === 0) {
     return <div>Loading videos...</div>;
   }
@@ -53,6 +82,9 @@ function VideoFeed() {
         mousewheel={true}
         className="video-feed-swiper"
         onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        ref={swiperRef}
       >
         {videos.map((video, index) => (
           <SwiperSlide key={video._id}>
@@ -64,10 +96,23 @@ function VideoFeed() {
               comments={comments[video._id] || []}
               onCommentAdd={handleCommentAdd}
               tokenBalance={tokenBalance}
+              toggleComments={toggleComments}
+              toggleTokenInfo={toggleTokenInfo}
             />
           </SwiperSlide>
         ))}
       </Swiper>
+      {showComments && (
+        <Comments
+          videoId={videos[currentIndex]._id}
+          comments={comments[videos[currentIndex]._id] || []}
+          onClose={toggleComments}
+          onAddComment={(newComment) => handleCommentAdd(videos[currentIndex]._id, newComment)}
+        />
+      )}
+      {showTokenInfo && (
+        <TokenInfo balance={tokenBalance} onClose={toggleTokenInfo} />
+      )}
     </div>
   );
 }

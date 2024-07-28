@@ -1,18 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaHeart, FaComment, FaShare, FaCoins } from 'react-icons/fa';
 import { BsPauseFill } from 'react-icons/bs';
-import Comments from './Comments';
-import TokenInfo from './TokenInfo';
 import '../styles/VideoPlayer.css';
 
-const APP_VERSION = "1.1.5"; // Обновляем версию
+const APP_VERSION = "1.1.6"; // Обновляем версию
 
-function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, comments, onCommentAdd, tokenBalance }) {
+function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComments, toggleTokenInfo }) {
   const [showInfo, setShowInfo] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [showComments, setShowComments] = useState(false);
-  const [showTokenInfo, setShowTokenInfo] = useState(false);
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -23,9 +19,6 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, comments, onC
         videoRef.current.currentTime = 0;
         videoRef.current.play().catch(error => console.log('Autoplay prevented:', error));
       }
-    } else {
-      setShowComments(false);
-      setShowTokenInfo(false);
     }
   }, [isActive]);
 
@@ -70,16 +63,6 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, comments, onC
     }
   };
 
-  const toggleComments = (e) => {
-    e.stopPropagation();
-    setShowComments(!showComments);
-  };
-
-  const toggleTokenInfo = (e) => {
-    e.stopPropagation();
-    setShowTokenInfo(!showTokenInfo);
-  };
-
   const shareVideo = (e) => {
     e.stopPropagation();
     console.log('Sharing video:', video.url);
@@ -105,28 +88,17 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, comments, onC
         <button className="action-button" onClick={toggleLike}>
           <FaHeart color={isLiked ? 'red' : 'white'} />
         </button>
-        <button className="action-button" onClick={toggleComments}>
+        <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleComments(); }}>
           <FaComment />
         </button>
         <button className="action-button" onClick={shareVideo}>
           <FaShare />
         </button>
-        <button className="action-button" onClick={toggleTokenInfo}>
+        <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleTokenInfo(); }}>
           <FaCoins />
         </button>
       </div>
       <div className="app-version">v{APP_VERSION}</div>
-      {showComments && isActive && (
-        <Comments
-          videoId={video._id}
-          comments={comments}
-          onClose={toggleComments}
-          onAddComment={(newComment) => onCommentAdd(video._id, newComment)}
-        />
-      )}
-      {showTokenInfo && isActive && (
-        <TokenInfo balance={tokenBalance} onClose={toggleTokenInfo} />
-      )}
     </div>
   );
 }
