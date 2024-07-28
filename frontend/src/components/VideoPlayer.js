@@ -5,7 +5,7 @@ import Comments from './Comments';
 import TokenInfo from './TokenInfo';
 import '../styles/VideoPlayer.css';
 
-const APP_VERSION = "1.1.4"; // Обновляем версию
+const APP_VERSION = "1.1.5"; // Обновляем версию
 
 function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, comments, onCommentAdd, tokenBalance }) {
   const [showInfo, setShowInfo] = useState(false);
@@ -17,14 +17,17 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, comments, onC
 
   useEffect(() => {
     setShowInfo(isActive);
-  }, [isActive]);
-
-  useEffect(() => {
-    if (videoRef.current && isActive) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.play().catch(error => console.log('Autoplay prevented:', error));
+    if (isActive) {
+      setIsPaused(false);
+      if (videoRef.current) {
+        videoRef.current.currentTime = 0;
+        videoRef.current.play().catch(error => console.log('Autoplay prevented:', error));
+      }
+    } else {
+      setShowComments(false);
+      setShowTokenInfo(false);
     }
-  }, [video, isActive]);
+  }, [isActive]);
 
   useEffect(() => {
     const videoElement = videoRef.current;
@@ -91,7 +94,7 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, comments, onC
         playsInline
         muted
       />
-      {isPaused && <div className="pause-overlay"><BsPauseFill /></div>}
+      {isPaused && isActive && <div className="pause-overlay"><BsPauseFill /></div>}
       {showInfo && (
         <div className="video-info">
           <div className="username">@user{video._id}</div>
@@ -113,7 +116,7 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, comments, onC
         </button>
       </div>
       <div className="app-version">v{APP_VERSION}</div>
-      {showComments && (
+      {showComments && isActive && (
         <Comments
           videoId={video._id}
           comments={comments}
@@ -121,7 +124,7 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, comments, onC
           onAddComment={(newComment) => onCommentAdd(video._id, newComment)}
         />
       )}
-      {showTokenInfo && (
+      {showTokenInfo && isActive && (
         <TokenInfo balance={tokenBalance} onClose={toggleTokenInfo} />
       )}
     </div>
