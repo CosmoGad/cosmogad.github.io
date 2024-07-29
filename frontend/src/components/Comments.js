@@ -19,6 +19,10 @@ function Comments({ videoId, comments, onClose, onAddComment }) {
     }
   };
 
+  const handleInputChange = (e) => {
+    setNewComment(e.target.value);
+  };
+
   return (
     <div className="comments-overlay" onClick={onClose}>
       <div className="comments-container" onClick={e => e.stopPropagation()}>
@@ -35,7 +39,7 @@ function Comments({ videoId, comments, onClose, onAddComment }) {
           <input
             type="text"
             value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
+            onChange={handleInputChange}
             placeholder="Add a comment..."
           />
           <button type="submit">Post</button>
