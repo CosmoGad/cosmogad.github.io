@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../styles/Comments.css';
 
 function Comments({ videoId, comments, onClose, onAddComment }) {
   const [newComment, setNewComment] = useState('');
+  const formRef = useRef(null);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -16,6 +17,9 @@ function Comments({ videoId, comments, onClose, onAddComment }) {
     if (newComment.trim()) {
       onAddComment({ id: Date.now(), text: newComment, user: 'Anonymous' });
       setNewComment('');
+      if (formRef.current) {
+        formRef.current.blur();
+      }
     }
   };
 
@@ -35,7 +39,7 @@ function Comments({ videoId, comments, onClose, onAddComment }) {
             </div>
           ))}
         </div>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} ref={formRef}>
           <input
             type="text"
             value={newComment}

@@ -31,5 +31,35 @@
             }
         }, { passive: false });
     </script>
+    <script>
+  window.Telegram.WebApp.expand();
+  window.Telegram.WebApp.enableClosingConfirmation();
+
+  // Исправление проблемы с виртуальной клавиатурой
+  let viewportHeight = window.innerHeight;
+  window.addEventListener('resize', () => {
+    if (window.innerHeight < viewportHeight) {
+      document.body.style.height = `${viewportHeight}px`;
+    } else {
+      document.body.style.height = '100%';
+    }
+    window.scrollTo(0, 0);
+  });
+
+  // Предотвращение скролла на мобильных устройствах
+  document.addEventListener('touchmove', function(e) {
+    if (e.target.closest('.comments-list') === null) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  // Исправление проблемы с фокусом на input
+  document.addEventListener('focus', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+      window.scrollTo(0, 0);
+      document.body.scrollTop = 0;
+    }
+  }, true);
+</script>
 </body>
 </html>
