@@ -1,3 +1,7 @@
+:root {
+  --vh: 1vh;
+}
+
 body, html {
   margin: 0;
   padding: 0;
@@ -5,11 +9,13 @@ body, html {
   overflow: hidden;
   width: 100%;
   height: 100%;
+  height: calc(var(--vh, 1vh) * 100);
 }
 
 .App {
   width: 100%;
   height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   overflow: hidden;
   background-color: #000;
 }
@@ -17,11 +23,13 @@ body, html {
 .video-feed-swiper {
   height: 100%;
   width: 100%;
+  touch-action: pan-y;
 }
 
 .swiper-slide {
   overflow: hidden;
   position: relative;
+  touch-action: pan-x pan-y;
 }
 
 .video-player {
@@ -79,6 +87,82 @@ body, html {
   outline: none;
 }
 
+.pause-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  padding: 15px;
+}
+
+.app-version {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  z-index: 10;
+}
+
+.video-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  transition: height 0.3s ease;
+}
+
+.video-progress.visible {
+  height: 20px;
+}
+
+.video-progress input {
+  width: 100%;
+  -webkit-appearance: none;
+  background: transparent;
+  outline: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.video-progress.visible input {
+  opacity: 1;
+}
+
+.video-progress input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+}
+
+.comments-section {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 20px;
+  max-height: 50%;
+  overflow-y: auto;
+}
+
+.comment {
+  margin-bottom: 10px;
+  padding: 5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
 @media (max-width: 768px) {
   .video-info {
     bottom: 60px;
@@ -107,89 +191,4 @@ body, html {
   .action-button {
     font-size: 18px;
   }
-}
-/* ... предыдущие стили ... */
-
-.pause-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 72px;
-    color: rgba(255, 255, 255, 0.7);
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 50%;
-    padding: 20px;
-}
-
-.app-version {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 12px;
-    z-index: 10;
-}
-
-.video-progress {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background: rgba(255, 255, 255, 0.2);
-    transition: height 0.3s ease;
-}
-
-.video-progress.visible {
-    height: 20px;
-}
-
-.video-progress input {
-    width: 100%;
-    -webkit-appearance: none;
-    background: transparent;
-    outline: none;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.video-progress.visible input {
-    opacity: 1;
-}
-
-.video-progress input::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    background: white;
-    cursor: pointer;
-}
-
-.comments-section {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 20px;
-    max-height: 50%;
-    overflow-y: auto;
-}
-
-.comment {
-    margin-bottom: 10px;
-    padding: 5px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.video-feed-swiper {
-    touch-action: pan-y;
-}
-
-.swiper-slide-active {
-    touch-action: pan-x pan-y;
 }

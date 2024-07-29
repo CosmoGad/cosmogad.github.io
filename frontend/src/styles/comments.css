@@ -21,20 +21,25 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .close-button {
-  align-self: flex-end;
+  position: absolute;
+  top: 10px;
+  right: 10px;
   background: none;
   border: none;
   font-size: 24px;
   cursor: pointer;
+  color: #333;
 }
 
 .comments-list {
   flex-grow: 1;
   overflow-y: auto;
   margin-bottom: 20px;
+  padding-top: 20px;
 }
 
 .comment {

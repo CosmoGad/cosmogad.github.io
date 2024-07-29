@@ -3,7 +3,7 @@ import { FaHeart, FaComment, FaShare, FaCoins } from 'react-icons/fa';
 import { BsPauseFill } from 'react-icons/bs';
 import '../styles/VideoPlayer.css';
 
-const APP_VERSION = "1.2.0"; // Обновляем версию
+const APP_VERSION = "1.2.1"; // Обновляем версию
 
 function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComments, toggleTokenInfo }) {
   const [showInfo, setShowInfo] = useState(false);
@@ -67,14 +67,16 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComment
     setIsLiked(!isLiked);
   };
 
-  const togglePlay = () => {
-    if (videoRef.current) {
-      if (videoRef.current.paused) {
-        videoRef.current.play().catch(error => console.log('Play prevented:', error));
-        setIsPaused(false);
-      } else {
-        videoRef.current.pause();
-        setIsPaused(true);
+  const togglePlay = (e) => {
+    if (!e.target.closest('.comments-modal')) {
+      if (videoRef.current) {
+        if (videoRef.current.paused) {
+          videoRef.current.play().catch(error => console.log('Play prevented:', error));
+          setIsPaused(false);
+        } else {
+          videoRef.current.pause();
+          setIsPaused(true);
+        }
       }
     }
   };

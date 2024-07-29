@@ -19,9 +19,15 @@ function Comments({ videoId, comments, onClose, onAddComment }) {
     }
   };
 
+  const handleOutsideClick = (e) => {
+    if (e.target.className === 'comments-modal') {
+      onClose();
+    }
+  };
+
   return (
-    <div className="comments-modal">
-      <div className="comments-content">
+    <div className="comments-modal" onClick={handleOutsideClick}>
+      <div className="comments-content" onClick={(e) => e.stopPropagation()}>
         <button className="close-button" onClick={onClose}>×</button>
         <h3>Comments</h3>
         <div className="comments-list">
