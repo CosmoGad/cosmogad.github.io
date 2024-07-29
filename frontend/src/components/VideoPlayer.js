@@ -3,7 +3,7 @@ import { FaHeart, FaComment, FaShare, FaCoins } from 'react-icons/fa';
 import { BsPauseFill } from 'react-icons/bs';
 import '../styles/VideoPlayer.css';
 
-const APP_VERSION = "1.1.9"; // Обновляем версию
+const APP_VERSION = "1.2.0"; // Обновляем версию
 
 function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComments, toggleTokenInfo }) {
   const [showInfo, setShowInfo] = useState(false);
@@ -11,33 +11,33 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComment
   const [isPaused, setIsPaused] = useState(false);
   const videoRef = useRef(null);
   const touchStartRef = useRef(null);
-  const lastPlayedTimeRef = useRef(0);
+  const currentTimeRef = useRef(0);
 
   useEffect(() => {
     setShowInfo(isActive);
     if (isActive) {
       if (videoRef.current) {
-        if (isPaused) {
-          videoRef.current.currentTime = lastPlayedTimeRef.current;
-        } else {
-          videoRef.current.currentTime = 0;
-          videoRef.current.play().catch(error => console.log('Autoplay prevented:', error));
-        }
+        videoRef.current.currentTime = 0;
+        videoRef.current.play().catch(error => console.log('Autoplay prevented:', error));
+        setIsPaused(false);
       }
     } else {
       if (videoRef.current) {
-        lastPlayedTimeRef.current = videoRef.current.currentTime;
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0;
       }
       setIsPaused(false);
     }
-  }, [isActive, isPaused]);
+  }, [isActive]);
 
   useEffect(() => {
     const videoElement = videoRef.current;
     videoElement.addEventListener('ended', onVideoEnd);
+    videoElement.addEventListener('timeupdate', handleTimeUpdate);
 
     return () => {
       videoElement.removeEventListener('ended', onVideoEnd);
+      videoElement.removeEventListener('timeupdate', handleTimeUpdate);
     };
   }, [onVideoEnd]);
 
@@ -51,6 +51,12 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComment
     }
     return () => clearInterval(interval);
   }, [isActive, isPaused, onTokenEarned]);
+
+  const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      currentTimeRef.current = videoRef.current.currentTime;
+    }
+  };
 
   const calculateEarnedTokens = (watchedSeconds) => {
     return (watchedSeconds / 60) * 0.1;

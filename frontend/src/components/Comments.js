@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/Comments.css';
 
 function Comments({ videoId, comments, onClose, onAddComment }) {
   const [newComment, setNewComment] = useState('');
-  const formRef = useRef(null);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -17,19 +16,12 @@ function Comments({ videoId, comments, onClose, onAddComment }) {
     if (newComment.trim()) {
       onAddComment({ id: Date.now(), text: newComment, user: 'Anonymous' });
       setNewComment('');
-      if (formRef.current) {
-        formRef.current.blur();
-      }
     }
   };
 
-  const handleInputChange = (e) => {
-    setNewComment(e.target.value);
-  };
-
   return (
-    <div className="comments-overlay" onClick={onClose}>
-      <div className="comments-container" onClick={e => e.stopPropagation()}>
+    <div className="comments-modal">
+      <div className="comments-content">
         <button className="close-button" onClick={onClose}>×</button>
         <h3>Comments</h3>
         <div className="comments-list">
@@ -39,11 +31,11 @@ function Comments({ videoId, comments, onClose, onAddComment }) {
             </div>
           ))}
         </div>
-        <form onSubmit={handleSubmit} ref={formRef}>
+        <form onSubmit={handleSubmit}>
           <input
             type="text"
             value={newComment}
-            onChange={handleInputChange}
+            onChange={(e) => setNewComment(e.target.value)}
             placeholder="Add a comment..."
           />
           <button type="submit">Post</button>

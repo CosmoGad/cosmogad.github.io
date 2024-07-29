@@ -70,10 +70,6 @@ function VideoFeed() {
     }
   };
 
-  if (videos.length === 0) {
-    return <div>Loading videos...</div>;
-  }
-
   return (
     <div className="video-feed-container">
       <Swiper
@@ -95,9 +91,6 @@ function VideoFeed() {
               onVideoEnd={handleVideoEnd}
               isActive={index === currentIndex}
               onTokenEarned={handleTokenEarned}
-              comments={comments[video._id] || []}
-              onCommentAdd={handleCommentAdd}
-              tokenBalance={tokenBalance}
               toggleComments={toggleComments}
               toggleTokenInfo={toggleTokenInfo}
             />

@@ -1,4 +1,4 @@
-.comments-overlay {
+.comments-modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -7,16 +7,16 @@
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: flex-end;
+  align-items: center;
   z-index: 1000;
 }
 
-.comments-container {
+.comments-content {
   background-color: white;
-  width: 100%;
-  max-height: 70vh;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  border-radius: 10px;
   padding: 20px;
   overflow-y: auto;
   display: flex;
@@ -43,10 +43,7 @@
 
 form {
   display: flex;
-  position: sticky;
-  bottom: 0;
-  background-color: white;
-  padding-top: 10px;
+  margin-top: 10px;
 }
 
 input {
@@ -64,10 +61,4 @@ button {
   border: none;
   border-radius: 20px;
   cursor: pointer;
-}
-
-@media (max-width: 768px) {
-  .comments-container {
-    max-height: 80vh;
-  }
 }
