@@ -4,7 +4,7 @@ import { BsPauseFill, BsPlayFill } from 'react-icons/bs';
 import '../styles/VideoPlayer.css';
 import { getComments, addComment } from '../api/comments';
 
-const APP_VERSION = "1.2.91";
+const APP_VERSION = "1.2.92";
 
 function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, commentsCount, user }) {
   const [isPaused, setIsPaused] = useState(false);

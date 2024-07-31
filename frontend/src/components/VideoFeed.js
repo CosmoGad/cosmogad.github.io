@@ -99,6 +99,19 @@ function VideoFeed() {
     }
   }, [isActive]);
 
+  useEffect(() => {
+    try {
+      const videoObjects = videoUrls.map((url, index) => ({
+        _id: index,
+        url,
+        description: `This is video number ${index + 1} #fun #crypto`,
+      }));
+      setVideos(videoObjects);
+    } catch (error) {
+      console.error('Error loading videos:', error);
+    }
+  }, []);
+
   return (
     <div className="video-feed-container">
       <Swiper
