@@ -3,15 +3,17 @@ import { FaHeart, FaComment, FaShare, FaCoins } from 'react-icons/fa';
 import { BsPauseFill } from 'react-icons/bs';
 import '../styles/VideoPlayer.css';
 
-const APP_VERSION = "1.2.1"; // Обновляем версию
+const APP_VERSION = "1.2.2"; // Обновляем версию
 
 function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComments, toggleTokenInfo }) {
   const [showInfo, setShowInfo] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [showLikeAnimation, setShowLikeAnimation] = useState(false);
   const videoRef = useRef(null);
   const touchStartRef = useRef(null);
   const currentTimeRef = useRef(0);
+  const lastTapRef = useRef(0);
 
   useEffect(() => {
     setShowInfo(isActive);
@@ -62,9 +64,27 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComment
     return (watchedSeconds / 60) * 0.1;
   };
 
+  const handleDoubleTap = (e) => {
+    const now = Date.now();
+    const DOUBLE_PRESS_DELAY = 300;
+    if (now - lastTapRef.current < DOUBLE_PRESS_DELAY) {
+      e.preventDefault();
+      if (!isLiked) {
+        setIsLiked(true);
+        setShowLikeAnimation(true);
+        setTimeout(() => setShowLikeAnimation(false), 1000);
+      }
+    }
+    lastTapRef.current = now;
+  };
+
   const toggleLike = (e) => {
     e.stopPropagation();
     setIsLiked(!isLiked);
+    if (!isLiked) {
+      setShowLikeAnimation(true);
+      setTimeout(() => setShowLikeAnimation(false), 1000);
+    }
   };
 
   const togglePlay = (e) => {
@@ -111,6 +131,7 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComment
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onDoubleClick={handleDoubleTap}
     >
       <video
         ref={videoRef}
@@ -140,6 +161,11 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComment
           <FaCoins />
         </button>
       </div>
+      {showLikeAnimation && (
+        <div className="like-animation">
+          <FaHeart color="red" size={100} />
+        </div>
+      )}
       <div className="app-version">v{APP_VERSION}</div>
     </div>
   );
