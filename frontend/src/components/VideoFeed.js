@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import VideoPlayer from './VideoPlayer';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Mousewheel, Virtual } from 'swiper';
@@ -13,11 +13,20 @@ SwiperCore.use([Mousewheel, Virtual]);
 function VideoFeed() {
   const [videos, setVideos] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [tokenBalance, setTokenBalance] = useState(0);
-  const [comments, setComments] = useState({});
+  const [tokenBalance, setTokenBalance] = useState(() => {
+    const saved = localStorage.getItem('tokenBalance');
+    return saved ? parseFloat(saved) : 0;
+  });
+  const [likes, setLikes] = useState(() => {
+    const saved = localStorage.getItem('likes');
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [comments, setComments] = useState(() => {
+    const saved = localStorage.getItem('comments');
+    return saved ? JSON.parse(saved) : {};
+  });
   const [showComments, setShowComments] = useState(false);
   const [showTokenInfo, setShowTokenInfo] = useState(false);
-  const swiperRef = useRef(null);
 
   useEffect(() => {
     const videoObjects = videoUrls.map((url, index) => ({
@@ -27,6 +36,18 @@ function VideoFeed() {
     }));
     setVideos(videoObjects);
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('tokenBalance', tokenBalance.toString());
+  }, [tokenBalance]);
+
+  useEffect(() => {
+    localStorage.setItem('likes', JSON.stringify(likes));
+  }, [likes]);
+
+  useEffect(() => {
+    localStorage.setItem('comments', JSON.stringify(comments));
+  }, [comments]);
 
   const handleVideoEnd = () => {
     if (currentIndex < videos.length - 1) {
@@ -53,36 +74,28 @@ function VideoFeed() {
     setShowTokenInfo(!showTokenInfo);
   };
 
-  const handleTouchStart = (e) => {
-    if (currentIndex === 0) {
-      const touch = e.touches[0];
-      swiperRef.current.touchStartY = touch.clientY;
-    }
-  };
-
-  const handleTouchMove = (e) => {
-    if (currentIndex === 0) {
-      const touch = e.touches[0];
-      const deltaY = touch.clientY - swiperRef.current.touchStartY;
-      if (deltaY > 50) {
-        e.preventDefault();
+  const toggleLike = (videoId) => {
+    setLikes(prev => {
+      const newLikes = { ...prev };
+      if (newLikes[videoId]) {
+        delete newLikes[videoId];
+      } else {
+        newLikes[videoId] = true;
       }
-    }
+      return newLikes;
+    });
   };
 
   return (
     <div className="video-feed-container">
       <Swiper
         direction={'vertical'}
-        slidesPerView={1}
+        slidesPerView={3}
         spaceBetween={0}
         mousewheel={true}
         virtual
         className="video-feed-swiper"
         onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
-        onSwiper={(swiper) => {
-          swiperRef.current = swiper;
-        }}
       >
         {videos.map((video, index) => (
           <SwiperSlide key={video._id} virtualIndex={index}>
@@ -93,6 +106,9 @@ function VideoFeed() {
               onTokenEarned={handleTokenEarned}
               toggleComments={toggleComments}
               toggleTokenInfo={toggleTokenInfo}
+              isLiked={!!likes[video._id]}
+              toggleLike={() => toggleLike(video._id)}
+              likesCount={Object.keys(likes).length}
             />
           </SwiperSlide>
         ))}

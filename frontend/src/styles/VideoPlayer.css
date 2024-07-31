@@ -16,34 +16,40 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.5);
+  font-size: 48px;
+  color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(0, 0, 0, 0.3);
   border-radius: 50%;
-  padding: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pause-overlay svg {
-  width: 30px;
-  height: 30px;
-  color: white;
+  padding: 15px;
 }
 
 .video-info {
   position: absolute;
-  bottom: 60px;
+  bottom: 20px;
   left: 10px;
   color: white;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+  z-index: 10;
+  max-width: 70%;
+}
+
+.username {
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 16px;
+}
+
+.video-description {
+  font-size: 14px;
 }
 
 .video-actions {
   position: absolute;
   right: 10px;
-  bottom: 60px;
+  bottom: 100px;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  z-index: 10;
 }
 
 .action-button {
@@ -53,32 +59,15 @@
   font-size: 24px;
   margin: 10px 0;
   cursor: pointer;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.app-version {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  color: white;
+.likes-count {
   font-size: 12px;
-}
-
-@media (max-width: 768px) {
-  .video-actions {
-    right: 5px;
-    bottom: 80px;
-  }
-
-  .action-button {
-    font-size: 20px;
-    margin: 8px 0;
-  }
-
-  .video-info {
-    bottom: 80px;
-    left: 5px;
-    font-size: 14px;
-  }
+  margin-top: 5px;
 }
 
 .like-animation {
@@ -103,4 +92,13 @@
     opacity: 0;
     transform: translate(-50%, -50%) scale(1);
   }
+}
+
+.app-version {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  z-index: 10;
 }
