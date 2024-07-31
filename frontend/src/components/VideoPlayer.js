@@ -3,7 +3,7 @@ import { FaHeart, FaComment, FaShare, FaCoins, FaVolumeMute, FaVolumeUp } from '
 import { BsPauseFill, BsPlayFill } from 'react-icons/bs';
 import '../styles/VideoPlayer.css';
 
-const APP_VERSION = "1.2.8";
+const APP_VERSION = "1.2.9";
 
 function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, commentsCount }) {
   const [isPaused, setIsPaused] = useState(false);

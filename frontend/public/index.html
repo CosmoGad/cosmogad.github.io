@@ -14,16 +14,7 @@
         window.Telegram.WebApp.expand();
         window.Telegram.WebApp.enableClosingConfirmation();
 
-        // Исправление проблемы с виртуальной клавиатурой
-        let viewportHeight = window.innerHeight;
-        window.addEventListener('resize', () => {
-            if (window.innerHeight < viewportHeight) {
-                document.body.style.height = `${viewportHeight}px`;
-            } else {
-                document.body.style.height = '100%';
-            }
-        });
-
+    
         // Предотвращение скролла на мобильных устройствах
         document.addEventListener('touchmove', function(e) {
             if (e.target.closest('.comments-list') === null) {

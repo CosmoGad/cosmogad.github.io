@@ -1,19 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Route, Routes } from 'react-router-dom';
 import VideoFeed from './components/VideoFeed';
-import TelegramAuth from './components/TelegramAuth';
+import { TelegramProvider } from './contexts/TelegramContext';
+import './styles/App.css';
 
 function App() {
-  const [user, setUser] = useState(null);
+    const [user, setUser] = useState(null);
+    const [error, setError] = useState(null);
 
-  const handleAuth = (telegramUser) => {
-    setUser(telegramUser);
-  };
+    useEffect(() => {
+        console.log('App component mounted');
+        if (window.Telegram && window.Telegram.WebApp) {
+            console.log('Telegram WebApp is available');
+            const tg = window.Telegram.WebApp;
+            tg.ready();
+            const initData = tg.initDataUnsafe;
+            console.log('Init data:', initData);
+            if (initData && initData.user) {
+                console.log('User data:', initData.user);
+                setUser(initData.user);
+            } else {
+                console.error('User data not available from Telegram WebApp');
+                setError('User data not available');
+            }
+        } else {
+            console.error('Telegram WebApp is not available');
+            setError('Telegram WebApp is not available');
+        }
+    }, []);
 
-  if (!user) {
-    return <TelegramAuth onAuth={handleAuth} />;
-  }
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
 
-  return <VideoFeed currentUser={user} />;
+    if (!user) {
+        return <div>Loading...</div>;
+    }
+
+    return (
+        <TelegramProvider value={{ user }}>
+            <div className="App">
+                <h1>Welcome, {user.username || 'User'}!</h1>
+                <Routes>
+                    <Route path="/" element={<VideoFeed />} />
+                    {/* Добавьте здесь другие маршруты, если они есть */}
+                </Routes>
+            </div>
+        </TelegramProvider>
+    );
 }
 
 export default App;
