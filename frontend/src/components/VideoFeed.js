@@ -86,33 +86,33 @@ function VideoFeed() {
     });
   };
 
-  return (
-    <div className="video-feed-container">
-      <Swiper
-        direction={'vertical'}
-        slidesPerView={3}
-        spaceBetween={0}
-        mousewheel={true}
-        virtual
-        className="video-feed-swiper"
-        onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
-      >
-        {videos.map((video, index) => (
-          <SwiperSlide key={video._id} virtualIndex={index}>
-            <VideoPlayer
-              video={video}
-              onVideoEnd={handleVideoEnd}
-              isActive={index === currentIndex}
-              onTokenEarned={handleTokenEarned}
-              toggleComments={toggleComments}
-              toggleTokenInfo={toggleTokenInfo}
-              isLiked={!!likes[video._id]}
-              toggleLike={() => toggleLike(video._id)}
-              likesCount={Object.keys(likes).length}
-            />
-          </SwiperSlide>
-        ))}
-      </Swiper>
+    return (
+      <div className="video-feed-container">
+        <Swiper
+          direction={'vertical'}
+          slidesPerView={1}  // Изменено с 3 на 1
+          spaceBetween={0}
+          mousewheel={true}
+          virtual
+          className="video-feed-swiper"
+          onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
+        >
+          {videos.map((video, index) => (
+            <SwiperSlide key={video._id} virtualIndex={index}>
+              <VideoPlayer
+                video={video}
+                onVideoEnd={handleVideoEnd}
+                isActive={index === currentIndex}
+                onTokenEarned={handleTokenEarned}
+                toggleComments={toggleComments}
+                toggleTokenInfo={toggleTokenInfo}
+                isLiked={!!likes[video._id]}
+                toggleLike={() => toggleLike(video._id)}
+                likesCount={Object.keys(likes).length}
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
       {showComments && (
         <Comments
           videoId={videos[currentIndex]._id}

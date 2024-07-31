@@ -3,7 +3,7 @@ import { FaHeart, FaComment, FaShare, FaCoins } from 'react-icons/fa';
 import { BsPauseFill } from 'react-icons/bs';
 import '../styles/VideoPlayer.css';
 
-const APP_VERSION = "1.2.3";
+const APP_VERSION = "1.2.4";
 
 function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount }) {
   const [showInfo, setShowInfo] = useState(false);
@@ -103,47 +103,45 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComment
   };
 
   return (
-    <div
-      className="video-player"
-      onClick={handleTap}
-    >
-      <video
-        ref={videoRef}
-        src={video.url}
-        loop={false}
-        playsInline
-        muted
-      />
-      {isPaused && isActive && <div className="pause-overlay"><BsPauseFill /></div>}
-      {showInfo && (
-        <div className="video-info">
-          <div className="username">@user{video._id}</div>
-          <div className="video-description">{video.description}</div>
-        </div>
-      )}
-      <div className="video-actions">
-        <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleLike(); }}>
-          <FaHeart color={isLiked ? 'red' : 'white'} />
-          <span className="likes-count">{likesCount}</span>
-        </button>
-        <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleComments(); }}>
-          <FaComment />
-        </button>
-        <button className="action-button" onClick={shareVideo}>
-          <FaShare />
-        </button>
-        <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleTokenInfo(); }}>
-          <FaCoins />
-        </button>
-      </div>
-      {showLikeAnimation && (
-        <div className="like-animation">
-          <FaHeart color="red" size={100} />
-        </div>
-      )}
-      <div className="app-version">v{APP_VERSION}</div>
-    </div>
-  );
-}
+     <div
+       className="video-player"
+       onClick={handleTap}
+     >
+       <video
+         ref={videoRef}
+         src={video.url}
+         loop={false}
+         playsInline
+         muted
+       />
+       {isPaused && isActive && <div className="pause-overlay"><BsPauseFill /></div>}
+       <div className="video-info">
+         <div className="username">@user{video._id}</div>
+         <div className="video-description">{video.description}</div>
+       </div>
+       <div className="video-actions">
+         <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleLike(); }}>
+           <FaHeart color={isLiked ? 'red' : 'white'} />
+           <span className="likes-count">{likesCount}</span>
+         </button>
+         <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleComments(); }}>
+           <FaComment />
+         </button>
+         <button className="action-button" onClick={shareVideo}>
+           <FaShare />
+         </button>
+         <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleTokenInfo(); }}>
+           <FaCoins />
+         </button>
+       </div>
+       {showLikeAnimation && (
+         <div className="like-animation">
+           <FaHeart color="red" size={100} />
+         </div>
+       )}
+       <div className="app-version">v{APP_VERSION}</div>
+     </div>
+   );
+ }
 
-export default VideoPlayer;
+ export default VideoPlayer;
