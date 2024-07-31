@@ -1,22 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FaHeart, FaComment, FaShare, FaCoins } from 'react-icons/fa';
-import { BsPauseFill } from 'react-icons/bs';
+import { FaHeart, FaComment, FaShare, FaCoins, FaVolumeMute, FaVolumeUp } from 'react-icons/fa';
+import { BsPauseFill, BsPlayFill } from 'react-icons/bs';
 import '../styles/VideoPlayer.css';
 
-const APP_VERSION = "1.2.4";
+const APP_VERSION = "1.2.5";
 
-function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount }) {
-  const [showInfo, setShowInfo] = useState(false);
+function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, commentsCount }) {
   const [isPaused, setIsPaused] = useState(false);
   const [showLikeAnimation, setShowLikeAnimation] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
   const videoRef = useRef(null);
-  const touchStartRef = useRef(null);
-  const currentTimeRef = useRef(0);
+  const progressBarRef = useRef(null);
   const lastTapRef = useRef(0);
   const tapTimeoutRef = useRef(null);
 
   useEffect(() => {
-    setShowInfo(isActive);
     if (isActive) {
       if (videoRef.current) {
         videoRef.current.currentTime = 0;
@@ -43,25 +43,11 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComment
     };
   }, [onVideoEnd]);
 
-  useEffect(() => {
-    let interval;
-    if (isActive && !isPaused) {
-      interval = setInterval(() => {
-        const earnedTokens = calculateEarnedTokens(5);
-        onTokenEarned(earnedTokens);
-      }, 5000);
-    }
-    return () => clearInterval(interval);
-  }, [isActive, isPaused, onTokenEarned]);
-
   const handleTimeUpdate = () => {
-    if (videoRef.current) {
-      currentTimeRef.current = videoRef.current.currentTime;
+    if (videoRef.current && !isDragging) {
+      const progress = (videoRef.current.currentTime / videoRef.current.duration) * 100;
+      setProgress(progress);
     }
-  };
-
-  const calculateEarnedTokens = (watchedSeconds) => {
-    return (watchedSeconds / 60) * 0.1;
   };
 
   const handleTap = (e) => {
@@ -97,51 +83,95 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComment
     }
   };
 
-  const shareVideo = (e) => {
+  const toggleMute = (e) => {
     e.stopPropagation();
-    console.log('Sharing video:', video.url);
+    setIsMuted(!isMuted);
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+    }
+  };
+
+  const handleProgressBarClick = (e) => {
+    const progressBar = progressBarRef.current;
+    const clickPosition = (e.clientX - progressBar.getBoundingClientRect().left) / progressBar.offsetWidth;
+    if (videoRef.current) {
+      videoRef.current.currentTime = clickPosition * videoRef.current.duration;
+    }
+  };
+
+  const handleProgressBarDragStart = () => {
+    setIsDragging(true);
+  };
+
+  const handleProgressBarDragEnd = () => {
+    setIsDragging(false);
+  };
+
+  const handleProgressBarDrag = (e) => {
+    if (isDragging) {
+      const progressBar = progressBarRef.current;
+      const dragPosition = (e.clientX - progressBar.getBoundingClientRect().left) / progressBar.offsetWidth;
+      setProgress(dragPosition * 100);
+      if (videoRef.current) {
+        videoRef.current.currentTime = dragPosition * videoRef.current.duration;
+      }
+    }
   };
 
   return (
-     <div
-       className="video-player"
-       onClick={handleTap}
-     >
-       <video
-         ref={videoRef}
-         src={video.url}
-         loop={false}
-         playsInline
-         muted
-       />
-       {isPaused && isActive && <div className="pause-overlay"><BsPauseFill /></div>}
-       <div className="video-info">
-         <div className="username">@user{video._id}</div>
-         <div className="video-description">{video.description}</div>
-       </div>
-       <div className="video-actions">
-         <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleLike(); }}>
-           <FaHeart color={isLiked ? 'red' : 'white'} />
-           <span className="likes-count">{likesCount}</span>
-         </button>
-         <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleComments(); }}>
-           <FaComment />
-         </button>
-         <button className="action-button" onClick={shareVideo}>
-           <FaShare />
-         </button>
-         <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleTokenInfo(); }}>
-           <FaCoins />
-         </button>
-       </div>
-       {showLikeAnimation && (
-         <div className="like-animation">
-           <FaHeart color="red" size={100} />
-         </div>
-       )}
-       <div className="app-version">v{APP_VERSION}</div>
-     </div>
-   );
- }
+    <div className="video-player" onClick={handleTap}>
+      <video
+        ref={videoRef}
+        src={video.url}
+        loop={false}
+        playsInline
+        muted={isMuted}
+      />
+      <div className="video-overlay">
+        {isPaused && <div className="play-pause-icon"><BsPlayFill /></div>}
+        <div className="video-info">
+          <div className="username">@user{video._id}</div>
+          <div className="video-description">{video.description}</div>
+        </div>
+        <div className="video-actions">
+          <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleLike(); }}>
+            <FaHeart color={isLiked ? 'red' : 'white'} />
+            <span className="action-count">{likesCount}</span>
+          </button>
+          <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleComments(); }}>
+            <FaComment />
+            <span className="action-count">{commentsCount}</span>
+          </button>
+          <button className="action-button" onClick={(e) => { e.stopPropagation(); /* handle share */ }}>
+            <FaShare />
+          </button>
+          <button className="action-button" onClick={(e) => { e.stopPropagation(); toggleTokenInfo(); }}>
+            <FaCoins />
+          </button>
+          <button className="action-button" onClick={toggleMute}>
+            {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
+          </button>
+        </div>
+        {showLikeAnimation && (
+          <div className="like-animation">
+            <FaHeart color="red" size={100} />
+          </div>
+        )}
+        <div className="app-version">v{APP_VERSION}</div>
+      </div>
+      <div
+        className="progress-bar"
+        ref={progressBarRef}
+        onClick={handleProgressBarClick}
+        onMouseDown={handleProgressBarDragStart}
+        onMouseUp={handleProgressBarDragEnd}
+        onMouseLeave={handleProgressBarDragEnd}
+        onMouseMove={handleProgressBarDrag}
+      >
+        <div className="progress" style={{width: `${progress}%`}}></div>
+      </div>
+    </div>
+  );
+}
 
- export default VideoPlayer;
+export default VideoPlayer;
