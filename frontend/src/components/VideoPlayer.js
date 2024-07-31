@@ -3,7 +3,7 @@ import { FaHeart, FaComment, FaShare, FaCoins, FaVolumeMute, FaVolumeUp } from '
 import { BsPauseFill, BsPlayFill } from 'react-icons/bs';
 import '../styles/VideoPlayer.css';
 
-const APP_VERSION = "1.2.9";
+const APP_VERSION = "1.2.91";
 
 function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, commentsCount }) {
   const [isPaused, setIsPaused] = useState(false);
@@ -17,12 +17,25 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComment
   const tapTimeoutRef = useRef(null);
 
   useEffect(() => {
-    if (isActive) {
-      videoRef.current.play().catch(error => console.log('Autoplay prevented:', error));
-    } else {
-      videoRef.current.pause();
-    }
-  }, [isActive]);
+  if (isActive) {
+    videoRef.current.play().catch(error => console.log('Autoplay prevented:', error));
+  } else {
+    videoRef.current.pause();
+    videoRef.current.currentTime = 0;
+  }
+}, [isActive]);
+
+// Добавьте этот эффект для автоповтора
+useEffect(() => {
+  const handleEnded = () => {
+    videoRef.current.currentTime = 0;
+    videoRef.current.play().catch(error => console.log('Autoplay prevented:', error));
+  };
+  videoRef.current.addEventListener('ended', handleEnded);
+  return () => {
+    videoRef.current.removeEventListener('ended', handleEnded);
+  };
+}, []);
 
   useEffect(() => {
     const videoElement = videoRef.current;

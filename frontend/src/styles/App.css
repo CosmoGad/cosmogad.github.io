@@ -18,10 +18,12 @@ body, html {
   height: calc(var(--vh, 1vh) * 100);
   overflow: hidden;
   background-color: #000;
+  display: flex;
+  flex-direction: column;
 }
 
 .video-feed-swiper {
-  height: 100%;
+  flex-grow: 1;
   width: 100%;
   touch-action: pan-y;
 }
@@ -190,5 +192,16 @@ body, html {
 
   .action-button {
     font-size: 18px;
+  }
+}
+
+/* Добавьте эти стили для решения проблемы с клавиатурой */
+@media screen and (max-height: 450px) {
+  .video-actions {
+    bottom: 20px;
+  }
+
+  .video-info {
+    bottom: 10px;
   }
 }

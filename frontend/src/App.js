@@ -18,7 +18,13 @@ function App() {
             console.log('Init data:', initData);
             if (initData && initData.user) {
                 console.log('User data:', initData.user);
-                setUser(initData.user);
+                setUser({
+                    id: initData.user.id,
+                    username: initData.user.username,
+                    firstName: initData.user.first_name,
+                    lastName: initData.user.last_name,
+                    photoUrl: initData.user.photo_url
+                });
             } else {
                 console.error('User data not available from Telegram WebApp');
                 setError('User data not available');
@@ -40,7 +46,6 @@ function App() {
     return (
         <TelegramProvider value={{ user }}>
             <div className="App">
-                <h1>Welcome, {user.username || 'User'}!</h1>
                 <Routes>
                     <Route path="/" element={<VideoFeed />} />
                     {/* Добавьте здесь другие маршруты, если они есть */}
