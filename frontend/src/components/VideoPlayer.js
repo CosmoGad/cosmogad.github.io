@@ -3,7 +3,7 @@ import { FaHeart, FaComment, FaShare, FaCoins, FaVolumeMute, FaVolumeUp } from '
 import { BsPauseFill, BsPlayFill } from 'react-icons/bs';
 import '../styles/VideoPlayer.css';
 
-const APP_VERSION = "1.2.5";
+const APP_VERSION = "1.2.6";
 
 function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, commentsCount }) {
   const [isPaused, setIsPaused] = useState(false);
@@ -18,17 +18,9 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComment
 
   useEffect(() => {
     if (isActive) {
-      if (videoRef.current) {
-        videoRef.current.currentTime = 0;
-        videoRef.current.play().catch(error => console.log('Autoplay prevented:', error));
-        setIsPaused(false);
-      }
+      videoRef.current.play().catch(error => console.log('Autoplay prevented:', error));
     } else {
-      if (videoRef.current) {
-        videoRef.current.pause();
-        videoRef.current.currentTime = 0;
-      }
-      setIsPaused(false);
+      videoRef.current.pause();
     }
   }, [isActive]);
 

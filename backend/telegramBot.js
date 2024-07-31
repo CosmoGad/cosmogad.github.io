@@ -41,19 +41,18 @@ bot.command('start', async (ctx) => {
     }
 });
 
-bot.on('message', (ctx) => {
-    const timestamp = Date.now();
-    const webAppUrl = `${process.env.WEBAPP_URL}?v=${timestamp}`;
-    return ctx.reply('Нажмите кнопку ниже, чтобы открыть CryptoClips:', {
-        reply_markup: {
-            inline_keyboard: [[
-                {
-                    text: 'Открыть CryptoClips',
-                    web_app: { url: webAppUrl }
-                }
-            ]]
-        }
+bot.on('message', async (ctx) => {
+  const userId = ctx.from.id;
+  const user = await User.findOne({ telegramId: userId });
+  if (!user) {
+    const newUser = new User({
+      telegramId: userId,
+      username: ctx.from.username,
+      firstName: ctx.from.first_name,
+      lastName: ctx.from.last_name
     });
-});
-
+    await newUser.save();
+  }
+        }
+        
 module.exports = bot;
