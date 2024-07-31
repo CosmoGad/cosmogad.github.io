@@ -9,23 +9,30 @@ function App() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const initTelegramApp = () => {
-      if (window.Telegram && window.Telegram.WebApp) {
-        const tg = window.Telegram.WebApp;
+    const initApp = () => {
+      console.log("Initializing app...");
+      const tg = window.Telegram?.WebApp;
+      if (tg) {
+        console.log("Telegram WebApp found");
         tg.ready();
-        const initData = tg.initDataUnsafe;
-        if (initData && initData.user) {
-          setUser(initData.user);
+        console.log("Telegram WebApp ready");
+        console.log("Init Data:", tg.initData);
+        console.log("User Data:", tg.initDataUnsafe.user);
+
+        if (tg.initDataUnsafe.user) {
+          console.log("User data available:", tg.initDataUnsafe.user);
+          setUser(tg.initDataUnsafe.user);
         } else {
+          console.log("User data not available");
           setError('User data not available. Please open this app from Telegram.');
         }
       } else {
-        setError('Telegram Web App is not available. Please open this app from Telegram.');
+        console.log("Telegram WebApp not found");
+        setError('Telegram WebApp is not available. Please open this app from Telegram.');
       }
     };
 
-    // Попытка инициализации с задержкой
-    setTimeout(initTelegramApp, 1000);
+    setTimeout(initApp, 1000);
   }, []);
 
   if (error) {
