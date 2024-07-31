@@ -1,17 +1,19 @@
-import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import React, { useState } from 'react';
 import VideoFeed from './components/VideoFeed';
-import './styles/App.css';
+import TelegramAuth from './components/TelegramAuth';
 
 function App() {
-    return (
-        <div className="App">
-            <Routes>
-                <Route path="/" element={<VideoFeed />} />
-                {/* Добавьте здесь другие маршруты, если они есть */}
-            </Routes>
-        </div>
-    );
+  const [user, setUser] = useState(null);
+
+  const handleAuth = (telegramUser) => {
+    setUser(telegramUser);
+  };
+
+  if (!user) {
+    return <TelegramAuth onAuth={handleAuth} />;
+  }
+
+  return <VideoFeed currentUser={user} />;
 }
 
 export default App;

@@ -3,7 +3,7 @@ import { FaHeart, FaComment, FaShare, FaCoins, FaVolumeMute, FaVolumeUp } from '
 import { BsPauseFill, BsPlayFill } from 'react-icons/bs';
 import '../styles/VideoPlayer.css';
 
-const APP_VERSION = "1.2.6";
+const APP_VERSION = "1.2.8";
 
 function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, commentsCount }) {
   const [isPaused, setIsPaused] = useState(false);
@@ -111,7 +111,7 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComment
   };
 
   return (
-    <div className="video-player" onClick={handleTap}>
+    <div className="video-player-container" onClick={handleTap}>
       <video
         ref={videoRef}
         src={video.url}
@@ -122,7 +122,7 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComment
       <div className="video-overlay">
         {isPaused && <div className="play-pause-icon"><BsPlayFill /></div>}
         <div className="video-info">
-          <div className="username">@user{video._id}</div>
+          <div className="username">@{video.author?.username || 'unknown'}</div>
           <div className="video-description">{video.description}</div>
         </div>
         <div className="video-actions">

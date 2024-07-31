@@ -13,6 +13,10 @@ const VideoSchema = new mongoose.Schema({
     views: { type: Number, default: 0 },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     comments: [CommentSchema],
+    author: {
+    telegramId: String,
+    username: String,
+    photoUrl: String,
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 }, { timestamps: true });
 

@@ -7,6 +7,12 @@
   background-color: white;
   overflow-y: auto;
   z-index: 1000;
+  transform: translateY(0);
+  transition: transform 0.3s ease-in-out;
+}
+
+.comments-modal.hidden {
+  transform: translateY(100%);
 }
 
 .comments-content {
