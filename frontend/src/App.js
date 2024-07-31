@@ -44,14 +44,14 @@ function App() {
   }
 
   return (
-    <TelegramProvider value={{ user }}>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<VideoFeed />} />
-        </Routes>
-      </div>
-    </TelegramProvider>
-  );
+  <TelegramProvider value={{ user }}>
+    <div className="App">
+      <Routes>
+        <Route path="/" element={<VideoFeed user={user} />} />
+      </Routes>
+    </div>
+  </TelegramProvider>
+);
 }
 
 export default App;

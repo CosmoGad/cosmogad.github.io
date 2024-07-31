@@ -29,24 +29,40 @@ function VideoFeed() {
   const [showTokenInfo, setShowTokenInfo] = useState(false);
 
   useEffect(() => {
-    const videoObjects = videoUrls.map((url, index) => ({
-      _id: index,
-      url,
-      description: `This is video number ${index + 1} #fun #crypto`,
-    }));
-    setVideos(videoObjects);
+    try {
+      const videoObjects = videoUrls.map((url, index) => ({
+        _id: index,
+        url,
+        description: `This is video number ${index + 1} #fun #crypto`,
+      }));
+      setVideos(videoObjects);
+    } catch (error) {
+      console.error('Error loading videos:', error);
+    }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('tokenBalance', tokenBalance.toString());
+    try {
+      localStorage.setItem('tokenBalance', tokenBalance.toString());
+    } catch (error) {
+      console.error('Error saving token balance:', error);
+    }
   }, [tokenBalance]);
 
   useEffect(() => {
-    localStorage.setItem('likes', JSON.stringify(likes));
+    try {
+      localStorage.setItem('likes', JSON.stringify(likes));
+    } catch (error) {
+      console.error('Error saving likes:', error);
+    }
   }, [likes]);
 
   useEffect(() => {
-    localStorage.setItem('comments', JSON.stringify(comments));
+    try {
+      localStorage.setItem('comments', JSON.stringify(comments));
+    } catch (error) {
+      console.error('Error saving comments:', error);
+    }
   }, [comments]);
 
   const handleVideoEnd = () => {
@@ -87,59 +103,38 @@ function VideoFeed() {
     });
   };
 
-  useEffect(() => {
-    if (isActive) {
-      videoRef.current.play().catch(error => {
-        console.log('Autoplay prevented:', error);
-        setIsPaused(true);
-      });
-    } else {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
-  }, [isActive]);
-
-  useEffect(() => {
-    try {
-      const videoObjects = videoUrls.map((url, index) => ({
-        _id: index,
-        url,
-        description: `This is video number ${index + 1} #fun #crypto`,
-      }));
-      setVideos(videoObjects);
-    } catch (error) {
-      console.error('Error loading videos:', error);
-    }
-  }, []);
-
   return (
     <div className="video-feed-container">
-      <Swiper
-        direction={'vertical'}
-        slidesPerView={1}
-        spaceBetween={0}
-        mousewheel={true}
-        virtual
-        className="video-feed-swiper"
-        onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
-      >
-        {videos.map((video, index) => (
-          <SwiperSlide key={video._id} virtualIndex={index}>
-            <VideoPlayer
-              video={video}
-              onVideoEnd={handleVideoEnd}
-              isActive={index === currentIndex}
-              onTokenEarned={handleTokenEarned}
-              toggleComments={toggleComments}
-              toggleTokenInfo={toggleTokenInfo}
-              isLiked={!!likes[video._id]}
-              toggleLike={() => toggleLike(video._id)}
-              likesCount={likes[video._id] || 0}
-              commentsCount={(comments[video._id] || []).length}
-            />
-          </SwiperSlide>
-        ))}
-      </Swiper>
+      {videos.length > 0 ? (
+        <Swiper
+          direction={'vertical'}
+          slidesPerView={1}
+          spaceBetween={0}
+          mousewheel={true}
+          virtual
+          className="video-feed-swiper"
+          onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
+        >
+          {videos.map((video, index) => (
+            <SwiperSlide key={video._id} virtualIndex={index}>
+              <VideoPlayer
+                video={video}
+                onVideoEnd={handleVideoEnd}
+                isActive={index === currentIndex}
+                onTokenEarned={handleTokenEarned}
+                toggleComments={toggleComments}
+                toggleTokenInfo={toggleTokenInfo}
+                isLiked={!!likes[video._id]}
+                toggleLike={() => toggleLike(video._id)}
+                likesCount={likes[video._id] || 0}
+                commentsCount={(comments[video._id] || []).length}
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      ) : (
+        <div>Loading videos...</div>
+      )}
       {showComments && (
         <Comments
           videoId={videos[currentIndex]._id}
