@@ -28,17 +28,17 @@ function Comments({ videoId, comments, onAddComment, onClose }) {
                 <h3>Comments</h3>
                 <div className="comments-list">
                     {comments.map(comment => (
-                        <div key={comment.id} className="comment">
-                            <img
-                                src={comment.user.photoUrl || 'default-avatar.png'}
-                                alt={comment.user.username}
-                                className="user-avatar"
-                            />
-                            <div className="comment-content">
-                                <strong>{comment.user.username}: </strong>
-                                {comment.text}
-                            </div>
-                        </div>
+                      <div className="comment">
+  <img
+    src={comment.user.photoUrl || 'path/to/default-avatar.png'}
+    alt={comment.user.username}
+    className="user-avatar"
+  />
+  <div className="comment-content">
+    <strong>{comment.user.username}</strong>
+    <p>{comment.text}</p>
+  </div>
+</div>
                     ))}
                 </div>
                 <form onSubmit={handleSubmit}>

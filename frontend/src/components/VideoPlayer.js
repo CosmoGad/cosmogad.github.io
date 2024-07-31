@@ -2,10 +2,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FaHeart, FaComment, FaShare, FaCoins, FaVolumeMute, FaVolumeUp } from 'react-icons/fa';
 import { BsPauseFill, BsPlayFill } from 'react-icons/bs';
 import '../styles/VideoPlayer.css';
+import { getComments, addComment } from '../api/comments';
 
 const APP_VERSION = "1.2.91";
 
-function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, commentsCount }) {
+function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, commentsCount, user }) {
   const [isPaused, setIsPaused] = useState(false);
   const [showLikeAnimation, setShowLikeAnimation] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -15,6 +16,37 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComment
   const progressBarRef = useRef(null);
   const lastTapRef = useRef(0);
   const tapTimeoutRef = useRef(null);
+  const [comments, setComments] = useState([]);
+
+  useEffect(() => {
+      if (isActive) {
+        loadComments();
+      }
+    }, [isActive, video._id]);
+
+    const loadComments = async () => {
+      try {
+        const fetchedComments = await getComments(video._id);
+        setComments(fetchedComments);
+      } catch (error) {
+        console.error('Failed to load comments', error);
+      }
+    };
+
+    const handleAddComment = async (text) => {
+      try {
+        const newComment = await addComment({
+          videoId: video._id,
+          userId: user.id,
+          username: user.username,
+          photoUrl: user.photoUrl,
+          text
+        });
+        setComments(prev => [...prev, newComment]);
+      } catch (error) {
+        console.error('Failed to add comment', error);
+      }
+    };
 
   useEffect(() => {
   if (isActive) {

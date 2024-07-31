@@ -87,6 +87,18 @@ function VideoFeed() {
     });
   };
 
+  useEffect(() => {
+    if (isActive) {
+      videoRef.current.play().catch(error => {
+        console.log('Autoplay prevented:', error);
+        setIsPaused(true);
+      });
+    } else {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  }, [isActive]);
+
   return (
     <div className="video-feed-container">
       <Swiper
