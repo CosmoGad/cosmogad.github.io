@@ -4,7 +4,7 @@ import { BsPauseFill, BsPlayFill } from 'react-icons/bs';
 import '../styles/VideoPlayer.css';
 import { getComments, addComment } from '../api/comments';
 
-const APP_VERSION = "1.2.92";
+const APP_VERSION = "1.3";
 
 function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, commentsCount, user }) {
   const [isPaused, setIsPaused] = useState(false);
@@ -30,8 +30,30 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComment
         setComments(fetchedComments);
       } catch (error) {
         console.error('Failed to load comments', error);
+        // Можно установить пустой массив комментариев или показать сообщение об ошибке
+        setComments([]);
       }
     };
+
+    useEffect(() => {
+  if (isActive) {
+    videoRef.current.play().catch(error => {
+      console.error('Error playing video:', error);
+      // Попробуйте воспроизвести без звука, если автовоспроизведение заблокировано
+      videoRef.current.muted = true;
+      videoRef.current.play().catch(e => console.error('Error playing muted video:', e));
+    });
+  } else {
+    videoRef.current.pause();
+  }
+}, [isActive]);
+
+useEffect(() => {
+  if (videos[currentIndex + 1]) {
+    const nextVideo = new Audio(videos[currentIndex + 1].url);
+    nextVideo.preload = 'auto';
+  }
+}, [currentIndex, videos]);
 
     const handleAddComment = async (text) => {
       try {

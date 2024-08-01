@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const CommentSchema = new mongoose.Schema({
-  videoId: { type: String, required: true },
-  userId: { type: String, required: true },
+  videoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Video', required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   username: { type: String, required: true },
   photoUrl: String,
   text: { type: String, required: true },

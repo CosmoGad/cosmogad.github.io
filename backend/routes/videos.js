@@ -3,7 +3,6 @@ const router = express.Router();
 const Video = require('../models/Video');
 const authMiddleware = require('../middleware/auth');
 
-// Получить все видео с пагинацией и поиском
 router.get('/', async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -41,7 +40,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Добавить новое видео
 router.post('/', authMiddleware, async (req, res) => {
     const video = new Video({
         url: req.body.url,
@@ -58,7 +56,6 @@ router.post('/', authMiddleware, async (req, res) => {
     }
 });
 
-// Лайк видео
 router.post('/:id/like', authMiddleware, async (req, res) => {
     try {
         const video = await Video.findById(req.params.id);
@@ -75,29 +72,6 @@ router.post('/:id/like', authMiddleware, async (req, res) => {
 
         await video.save();
         res.json({ likes: video.likes.length });
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-});
-
-// Добавить комментарий
-router.post('/:id/comment', authMiddleware, async (req, res) => {
-    try {
-        const video = await Video.findById(req.params.id);
-        if (!video) {
-            return res.status(404).json({ message: 'Video not found' });
-        }
-
-        const newComment = {
-            user: req.user._id,
-            text: req.body.text
-        };
-
-        video.comments.push(newComment);
-        await video.save();
-
-        const populatedComment = await Video.populate(newComment, {path: 'user', select: 'username'});
-        res.status(201).json(populatedComment);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }

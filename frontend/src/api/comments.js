@@ -1,13 +1,25 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
 
 export const getComments = async (videoId) => {
-  const response = await axios.get(`${API_URL}/comments/${videoId}`);
-  return response.data;
+  try {
+    const response = await axios.get(`${API_URL}/comments/${videoId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+    throw error;
+  }
 };
 
-export const addComment = async (commentData) => {
-  const response = await axios.post(`${API_URL}/comments`, commentData);
-  return response.data;
+export const addComment = async (videoId, text) => {
+  try {
+    const response = await axios.post(`${API_URL}/comments`, { videoId, text });
+    return response.data;
+  } catch (error) {
+    console.error('Error adding comment:', error);
+    throw error;
+  }
 };
+
+// Добавьте другие функции для работы с комментариями, если они нужны

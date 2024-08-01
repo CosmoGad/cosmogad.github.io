@@ -1,45 +1,41 @@
 require('dotenv').config();
-console.log('TELEGRAM_BOT_TOKEN:', process.env.TELEGRAM_BOT_TOKEN);
-console.log('WEBAPP_URL:', process.env.WEBAPP_URL);
-
 const express = require('express');
-const connectDB = require('./database');
-const telegramBot = require('./telegramBot');
-const mongoose = require('mongoose');
 const cors = require('cors');
-const commentsRouter = require('./routes/comments');
-
-const port = process.env.PORT || 3001;
-const app = express();
-
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-
+const connectDB = require('./database');
 const authRoutes = require('./routes/auth');
 const videoRoutes = require('./routes/videos');
+const commentRoutes = require('./routes/comments');
+const userRoutes = require('./routes/users');
+const telegramBot = require('./telegramBot');
+
+const app = express();
+const port = process.env.PORT || 3001;
+
+console.log('TELEGRAM_BOT_TOKEN:', process.env.TELEGRAM_BOT_TOKEN);
+console.log('WEBAPP_URL:', process.env.WEBAPP_URL);
 
 app.use(cors());
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/videos', videoRoutes);
-app.use(express.json());
-app.use('/api/comments', commentsRouter);
+app.use('/api/comments', commentRoutes);
+app.use('/api/users', userRoutes);
+
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
 
 app.get('/api/test', (req, res) => {
     res.json({ message: 'API is working' });
 });
 
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('Could not connect to MongoDB', err));
-
-const port = process.env.PORT || 5000;
-app.listen(port, () => console.log(`Server running on port ${port}`));
-
 const server = app.listen(port, async () => {
     console.log(`Сервер запущен на порту ${port}`);
     try {
         await connectDB();
+        console.log('MongoDB connected successfully');
         if (telegramBot.launch) {
             await telegramBot.launch();
             console.log('Telegram бот успешно запущен');
@@ -54,4 +50,7 @@ const server = app.listen(port, async () => {
     }
 });
 
-// Остальной код остается без изменений
+process.on('unhandledRejection', (err) => {
+    console.log('Необработанное отклонение обещания:', err);
+    server.close(() => process.exit(1));
+});
