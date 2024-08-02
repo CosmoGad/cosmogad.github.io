@@ -1,35 +1,36 @@
 import React from 'react';
+import '../styles/Comments.css';
 
-function Comments({ videoId, comments, onClose, onAddComment }) {
-  if (!comments) {
-    return <div>Loading comments...</div>;
-  }
-
+function Comments({ comments, onClose, onAddComment }) {
   return (
-    <div className="comments-section">
-      {comments.map(comment => (
-        <div key={comment._id} className="comment">
-          <img
-            src={comment.user.photoUrl || 'path/to/default-avatar.png'}
-            alt={comment.user.username}
-            className="user-avatar"
-          />
-          <div className="comment-content">
-            <strong>{comment.user.username}</strong>
-            <p>{comment.text}</p>
-          </div>
+    <div className="comments-modal">
+      <div className="comments-content">
+        <button className="close-button" onClick={onClose}>×</button>
+        <h3>Comments</h3>
+        <div className="comments-list">
+          {comments.map(comment => (
+            <div key={comment.id} className="comment">
+              <img
+                src={comment.user?.photoUrl || '/default-avatar.png'}
+                alt={comment.user?.username || 'Anonymous'}
+                className="user-avatar"
+              />
+              <div className="comment-content">
+                <strong>{comment.user?.username || 'Anonymous'}</strong>
+                <p>{comment.text}</p>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
-      {/* Форма добавления комментария */}
-      <form onSubmit={(e) => {
-        e.preventDefault();
-        const text = e.target.comment.value;
-        onAddComment({ text });
-        e.target.reset();
-      }}>
-        <input type="text" name="comment" placeholder="Add a comment..." />
-        <button type="submit">Post</button>
-      </form>
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          onAddComment(e.target.comment.value);
+          e.target.comment.value = '';
+        }}>
+          <input type="text" name="comment" placeholder="Add a comment..." />
+          <button type="submit">Post</button>
+        </form>
+      </div>
     </div>
   );
 }

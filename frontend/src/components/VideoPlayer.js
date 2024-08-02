@@ -26,15 +26,14 @@ function VideoPlayer({ video, onVideoEnd,
     }, [isActive, video._id, currentIndex]);
 
     const loadComments = async () => {
-      try {
-        const fetchedComments = await getComments(video._id);
-        setComments(fetchedComments);
-      } catch (error) {
-        console.error('Failed to load comments', error);
-        // Можно установить пустой массив комментариев или показать сообщение об ошибке
-        setComments([]);
-      }
-    };
+  try {
+    const fetchedComments = await getComments(video._id);
+    setComments(fetchedComments);
+  } catch (error) {
+    console.error('Failed to load comments', error);
+    setComments([]);
+  }
+};
 
     const handleVideoError = (error) => {
       console.error('Error loading video:', error);
