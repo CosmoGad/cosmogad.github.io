@@ -103,20 +103,6 @@ function VideoFeed() {
     });
   };
 
-  <VideoPlayer
-    video={video}
-    onVideoEnd={handleVideoEnd}
-    isActive={index === currentIndex}
-    onTokenEarned={handleTokenEarned}
-    toggleComments={toggleComments}
-    toggleTokenInfo={toggleTokenInfo}
-    isLiked={!!likes[video._id]}
-    toggleLike={() => toggleLike(video._id)}
-    likesCount={likes[video._id] || 0}
-    commentsCount={(comments[video._id] || []).length}
-    currentIndex={currentIndex}  // Добавьте эту строку
-  />
-
   return (
     <div className="video-feed-container">
       {videos.length > 0 ? (
@@ -142,6 +128,7 @@ function VideoFeed() {
                 toggleLike={() => toggleLike(video._id)}
                 likesCount={likes[video._id] || 0}
                 commentsCount={(comments[video._id] || []).length}
+                currentIndex={currentIndex}
               />
             </SwiperSlide>
           ))}
@@ -149,12 +136,12 @@ function VideoFeed() {
       ) : (
         <div>Loading videos...</div>
       )}
-      {showComments && (
+      {showComments && videos.length > 0 && (
         <Comments
-          videoId={videos[currentIndex]._id}
-          comments={comments[videos[currentIndex]._id] || []}
+          videoId={videos[currentIndex]?._id}
+          comments={comments[videos[currentIndex]?._id] || []}
           onClose={toggleComments}
-          onAddComment={(newComment) => handleCommentAdd(videos[currentIndex]._id, newComment)}
+          onAddComment={(newComment) => handleCommentAdd(videos[currentIndex]?._id, newComment)}
         />
       )}
       {showTokenInfo && (
