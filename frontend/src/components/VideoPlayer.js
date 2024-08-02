@@ -6,7 +6,8 @@ import { getComments, addComment } from '../api/comments';
 
 const APP_VERSION = "1.3";
 
-function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, commentsCount, user }) {
+function VideoPlayer({ video, onVideoEnd,
+  currentIndex, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, commentsCount, user }) {
   const [isPaused, setIsPaused] = useState(false);
   const [showLikeAnimation, setShowLikeAnimation] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -22,7 +23,7 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComment
       if (isActive) {
         loadComments();
       }
-    }, [isActive, video._id]);
+    }, [isActive, video._id, currentIndex]);
 
     const loadComments = async () => {
       try {
@@ -35,25 +36,12 @@ function VideoPlayer({ video, onVideoEnd, isActive, onTokenEarned, toggleComment
       }
     };
 
-    useEffect(() => {
-  if (isActive) {
-    videoRef.current.play().catch(error => {
-      console.error('Error playing video:', error);
-      // Попробуйте воспроизвести без звука, если автовоспроизведение заблокировано
-      videoRef.current.muted = true;
-      videoRef.current.play().catch(e => console.error('Error playing muted video:', e));
-    });
-  } else {
-    videoRef.current.pause();
-  }
-}, [isActive]);
-
-useEffect(() => {
-  if (videos[currentIndex + 1]) {
-    const nextVideo = new Audio(videos[currentIndex + 1].url);
-    nextVideo.preload = 'auto';
-  }
-}, [currentIndex, videos]);
+//useEffect(() => {
+  //if (videos[currentIndex + 1]) {
+    //const nextVideo = new Audio(videos[currentIndex + 1].url);
+    //nextVideo.preload = 'auto';
+  //}
+//}, [currentIndex, videos]);
 
     const handleAddComment = async (text) => {
       try {

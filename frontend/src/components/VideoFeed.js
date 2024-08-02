@@ -103,6 +103,20 @@ function VideoFeed() {
     });
   };
 
+  <VideoPlayer
+    video={video}
+    onVideoEnd={handleVideoEnd}
+    isActive={index === currentIndex}
+    onTokenEarned={handleTokenEarned}
+    toggleComments={toggleComments}
+    toggleTokenInfo={toggleTokenInfo}
+    isLiked={!!likes[video._id]}
+    toggleLike={() => toggleLike(video._id)}
+    likesCount={likes[video._id] || 0}
+    commentsCount={(comments[video._id] || []).length}
+    currentIndex={currentIndex}  // Добавьте эту строку
+  />
+
   return (
     <div className="video-feed-container">
       {videos.length > 0 ? (
