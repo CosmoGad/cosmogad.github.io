@@ -3,17 +3,19 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: white;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
   max-height: 70vh;
   overflow-y: auto;
+  z-index: 1000;
 }
 
 .comment {
   display: flex;
   padding: 10px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .user-avatar {
@@ -27,16 +29,27 @@
   flex-grow: 1;
 }
 
+.comment-username {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.comment-text {
+  margin-bottom: 4px;
+}
+
 .comment-actions {
   display: flex;
   justify-content: space-between;
   margin-top: 5px;
+  font-size: 12px;
+  color: #999;
 }
 
 .comment-form {
   display: flex;
   padding: 10px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .comment-input {
@@ -44,7 +57,8 @@
   border: none;
   padding: 10px;
   border-radius: 20px;
-  background-color: #f0f0f0;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
 }
 
 .comment-submit {

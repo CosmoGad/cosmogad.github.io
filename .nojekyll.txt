@@ -1,0 +1,89 @@
+pushNotification.ts:148 Uncaught (in promise)
+
+TypeError: Failed to execute 'showNotification' on 'ServiceWorkerRegistration': No notification permission has been granted for this origin. at R (pushNotification.ts:148:23) at pushNotification.ts:271:14
+
+R@pushNotification.ts:148(анонимный)@pushNotification.ts:271
+
+assetCache.ts:60
+
+Error: TIMEOUT at assetCache.ts:55:74 at async r (assetCache.ts:54:5) at async assetCache.ts:10:9
+
+r@assetCache.ts:60
+Failed to load resource: the server responded with a status of 404 (Not Found)
+comments.js:10  Error fetching comments: gtcode: "ERR_BAD_REQUEST"config: {transitional: {…}, adapter: Array(3), transformRequest: Array(1), transformResponse: Array(1), timeout: 0, …}message: "Request failed with status code 404"name: "AxiosError"request: XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, …}response: {data: {…}, status: 404, statusText: 'Not Found', headers: Xt, config: {…}, …}stack: "AxiosError: Request failed with status code 404\n    at tn (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:180313)\n    at XMLHttpRequest.c (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:184897)\n    at In.request (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:192882)\n    at async https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:198253\n    at async L (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:198226)"[[Prototype]]: Error
+(анонимный) @ comments.js:10
+VideoPlayer.js:33  Failed to load comments gtcode: "ERR_BAD_REQUEST"config: {transitional: {…}, adapter: Array(3), transformRequest: Array(1), transformResponse: Array(1), timeout: 0, …}message: "Request failed with status code 404"name: "AxiosError"request: XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, …}response: {data: {…}, status: 404, statusText: 'Not Found', headers: Xt, config: {…}, …}stack: "AxiosError: Request failed with status code 404\n    at tn (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:180313)\n    at XMLHttpRequest.c (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:184897)\n    at In.request (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:192882)\n    at async https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:198253\n    at async L (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:198226)"[[Prototype]]: Error
+L @ VideoPlayer.js:33
+localhost:3001/api/comments/1:1 
+        
+        
+        Failed to load resource: the server responded with a status of 404 (Not Found)
+comments.js:10  Error fetching comments: gtcode: "ERR_BAD_REQUEST"config: {transitional: {…}, adapter: Array(3), transformRequest: Array(1), transformResponse: Array(1), timeout: 0, …}message: "Request failed with status code 404"name: "AxiosError"request: XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, …}response: {data: {…}, status: 404, statusText: 'Not Found', headers: Xt, config: {…}, …}stack: "AxiosError: Request failed with status code 404\n    at tn (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:180313)\n    at XMLHttpRequest.c (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:184897)\n    at In.request (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:192882)\n    at async https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:198253\n    at async L (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:198226)"[[Prototype]]: Error
+(анонимный) @ comments.js:10
+VideoPlayer.js:33  Failed to load comments gtcode: "ERR_BAD_REQUEST"config: {transitional: {…}, adapter: Array(3), transformRequest: Array(1), transformResponse: Array(1), timeout: 0, …}message: "Request failed with status code 404"name: "AxiosError"request: XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, …}response: {data: {…}, status: 404, statusText: 'Not Found', headers: Xt, config: {…}, …}stack: "AxiosError: Request failed with status code 404\n    at tn (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:180313)\n    at XMLHttpRequest.c (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:184897)\n    at In.request (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:192882)\n    at async https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:198253\n    at async L (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:198226)"[[Prototype]]: Error
+L @ VideoPlayer.js:33
+localhost:3001/api/comments/2:1 
+        
+        
+        Failed to load resource: the server responded with a status of 404 (Not Found)
+comments.js:10  Error fetching comments: gtcode: "ERR_BAD_REQUEST"config: {transitional: {…}, adapter: Array(3), transformRequest: Array(1), transformResponse: Array(1), timeout: 0, …}message: "Request failed with status code 404"name: "AxiosError"request: XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, …}response: {data: {…}, status: 404, statusText: 'Not Found', headers: Xt, config: {…}, …}stack: "AxiosError: Request failed with status code 404\n    at tn (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:180313)\n    at XMLHttpRequest.c (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:184897)\n    at In.request (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:192882)\n    at async https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:198253\n    at async L (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:198226)"[[Prototype]]: Error
+(анонимный) @ comments.js:10
+VideoPlayer.js:33  Failed to load comments gtcode: "ERR_BAD_REQUEST"config: {transitional: {…}, adapter: Array(3), transformRequest: Array(1), transformResponse: Array(1), timeout: 0, …}message: "Request failed with status code 404"name: "AxiosError"request: XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, …}response: {data: {…}, status: 404, statusText: 'Not Found', headers: Xt, config: {…}, …}stack: "AxiosError: Request failed with status code 404\n    at tn (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:180313)\n    at XMLHttpRequest.c (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:184897)\n    at In.request (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:192882)\n    at async https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:198253\n    at async L (https://cosmogad.github.io/static/js/main.9d2ce26a.js:2:198226)"[[Prototype]]: Error
+L @ VideoPlayer.js:33
+localhost:3001/api/comments/3:1 
+        
+        
+        Failed to load resource: the server responded with a status of 404 (Not Found)
+comments.js:10  Error fetching comments: gt
+(анонимный) @ comments.js:10
+VideoPlayer.js:33  Failed to load comments gt
+L @ VideoPlayer.js:33
+localhost:3001/api/comments/4:1 
+        
+        
+        Failed to load resource: the server responded with a status of 404 (Not Found)
+comments.js:10  Error fetching comments: gt
+(анонимный) @ comments.js:10
+VideoPlayer.js:33  Failed to load comments gt
+L @ VideoPlayer.js:33
+localhost:3001/api/comments/5:1 
+        
+        
+        Failed to load resource: the server responded with a status of 404 (Not Found)
+comments.js:10  Error fetching comments: gt
+(анонимный) @ comments.js:10
+VideoPlayer.js:33  Failed to load comments gt
+L @ VideoPlayer.js:33
+localhost:3001/api/comments/6:1 
+        
+        
+        Failed to load resource: the server responded with a status of 404 (Not Found)
+comments.js:10  Error fetching comments: gt
+(анонимный) @ comments.js:10
+VideoPlayer.js:33  Failed to load comments gt
+L @ VideoPlayer.js:33
+react-dom.production.min.js:188  TypeError: Cannot read properties of undefined (reading 'photoUrl')
+    at Comments.js:13:31
+    at Array.map (<anonymous>)
+    at sa (Comments.js:10:17)
+    at ml (react-dom.production.min.js:160:137)
+    at Co (react-dom.production.min.js:196:258)
+    at xs (react-dom.production.min.js:291:88)
+    at bu (react-dom.production.min.js:279:389)
+    at gu (react-dom.production.min.js:279:320)
+    at vu (react-dom.production.min.js:279:180)
+    at iu (react-dom.production.min.js:270:88)
+co @ react-dom.production.min.js:188
+Показать еще 1 кадр
+Меньше
+react-dom.production.min.js:127  Uncaught TypeError: Cannot read properties of undefined (reading 'photoUrl')
+    at Comments.js:13:31
+    at Array.map (<anonymous>)
+    at sa (Comments.js:10:17)
+    at ml (react-dom.production.min.js:160:137)
+    at Co (react-dom.production.min.js:196:258)
+    at xs (react-dom.production.min.js:291:88)
+    at bu (react-dom.production.min.js:279:389)
+    at gu (react-dom.production.min.js:279:320)
+    at vu (react-dom.production.min.js:279:180)
+    at iu (react-dom.production.min.js:270:88)

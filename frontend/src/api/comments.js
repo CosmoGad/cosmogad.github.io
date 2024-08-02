@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://github.com/CosmoGad/cosmogad.github.io/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
 export const getComments = async (videoId) => {
   try {
