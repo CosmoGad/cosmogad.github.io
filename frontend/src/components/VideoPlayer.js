@@ -4,7 +4,7 @@ import { BsPauseFill, BsPlayFill } from 'react-icons/bs';
 import '../styles/VideoPlayer.css';
 import { getComments, addComment } from '../api/comments';
 
-const APP_VERSION = "1.3.1";
+const APP_VERSION = "1.3.2";
 
 function VideoPlayer({ video, onVideoEnd,
   currentIndex, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, commentsCount, user }) {
@@ -35,6 +35,21 @@ function VideoPlayer({ video, onVideoEnd,
         setComments([]);
       }
     };
+
+    const handleVideoError = (error) => {
+      console.error('Error loading video:', error);
+      // Здесь можно добавить логику для отображения сообщения об ошибке пользователю
+    };
+
+    // В JSX добавьте обработчик ошибки:
+    <video
+      ref={videoRef}
+      src={video.url}
+      loop={false}
+      playsInline
+      muted={isMuted}
+      onError={handleVideoError}
+    />
 
 //useEffect(() => {
   //if (videos[currentIndex + 1]) {
@@ -69,16 +84,22 @@ function VideoPlayer({ video, onVideoEnd,
 
 // Добавьте этот эффект для автоповтора
 useEffect(() => {
-  const handleEnded = () => {
-    videoRef.current.currentTime = 0;
-    videoRef.current.play().catch(error => console.log('Autoplay prevented:', error));
-  };
-  videoRef.current.addEventListener('ended', handleEnded);
-  return () => {
-    videoRef.current.removeEventListener('ended', handleEnded);
-  };
-}, []);
-
+  if (isActive) {
+    const playVideo = async () => {
+      try {
+        await videoRef.current.play();
+      } catch (error) {
+        console.error('Autoplay prevented:', error);
+        // Попробуйте воспроизвести без звука
+        videoRef.current.muted = true;
+        await videoRef.current.play();
+      }
+    };
+    playVideo();
+  } else {
+    videoRef.current.pause();
+  }
+}, [isActive]);
   useEffect(() => {
     const videoElement = videoRef.current;
     videoElement.addEventListener('ended', onVideoEnd);

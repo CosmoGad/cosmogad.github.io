@@ -136,14 +136,14 @@ function VideoFeed() {
       ) : (
         <div>Loading videos...</div>
       )}
-      {showComments && videos.length > 0 && (
-        <Comments
-          videoId={videos[currentIndex]?._id}
-          comments={comments[videos[currentIndex]?._id] || []}
-          onClose={toggleComments}
-          onAddComment={(newComment) => handleCommentAdd(videos[currentIndex]?._id, newComment)}
-        />
-      )}
+      {showComments && videos.length > 0 && videos[currentIndex] && (
+  <Comments
+    videoId={videos[currentIndex]._id}
+    comments={comments[videos[currentIndex]._id] || []}
+    onClose={toggleComments}
+    onAddComment={(newComment) => handleCommentAdd(videos[currentIndex]._id, newComment)}
+  />
+)}
       {showTokenInfo && (
         <TokenInfo balance={tokenBalance} onClose={toggleTokenInfo} />
       )}
