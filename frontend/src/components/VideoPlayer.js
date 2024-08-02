@@ -5,10 +5,9 @@ import '../styles/VideoPlayer.css';
 import { getComments, addComment } from '../api/comments';
 import Comments from './Comments';
 
-const APP_VERSION = "1.3.4";
+const APP_VERSION = "1.3.5";
 
-function VideoPlayer({ video, onVideoEnd,
-  currentIndex, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, commentsCount, user }) {
+function VideoPlayer({ video, onVideoEnd, currentIndex, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, showComments, commentsCount, user }) {
   const [isPaused, setIsPaused] = useState(false);
   const [showLikeAnimation, setShowLikeAnimation] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -21,85 +20,75 @@ function VideoPlayer({ video, onVideoEnd,
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
-      if (isActive) {
-        loadComments();
-      }
-    }, [isActive, video._id, currentIndex]);
+    if (isActive) {
+      loadComments();
+    }
+  }, [isActive, video._id, currentIndex]);
 
-    const loadComments = async () => {
-  try {
-    const fetchedComments = await getComments(video._id);
-    setComments(fetchedComments);
-  } catch (error) {
-    console.error('Failed to load comments', error);
-    setComments([]);
-  }
-};
+  const loadComments = async () => {
+    try {
+      const fetchedComments = await getComments(video._id);
+      setComments(fetchedComments);
+    } catch (error) {
+      console.error('Failed to load comments', error);
+      setComments([]);
+    }
+  };
 
-    const handleVideoError = (error) => {
-      console.error('Error loading video:', error);
-      // Здесь можно добавить логику для отображения сообщения об ошибке пользователю
-    };
+  const handleVideoError = (error) => {
+    console.error('Error loading video:', error);
+    // Здесь можно добавить логику для отображения сообщения об ошибке пользователю
+  };
 
-    // В JSX добавьте обработчик ошибки:
-    <video
-      ref={videoRef}
-      src={video.url}
-      loop={false}
-      playsInline
-      muted={isMuted}
-      onError={handleVideoError}
-    />
+  //useEffect(() => {
+  //  if (videos[currentIndex + 1]) {
+  //    const nextVideo = new Audio(videos[currentIndex + 1].url);
+  //    nextVideo.preload = 'auto';
+  //  }
+  //}, [currentIndex, videos]);
 
-//useEffect(() => {
-  //if (videos[currentIndex + 1]) {
-    //const nextVideo = new Audio(videos[currentIndex + 1].url);
-    //nextVideo.preload = 'auto';
-  //}
-//}, [currentIndex, videos]);
-
-    const handleAddComment = async (text) => {
-      try {
-        const newComment = await addComment({
-          videoId: video._id,
-          userId: user.id,
-          username: user.username,
-          photoUrl: user.photoUrl,
-          text
-        });
-        setComments(prev => [...prev, newComment]);
-      } catch (error) {
-        console.error('Failed to add comment', error);
-      }
-    };
+  const handleAddComment = async (text) => {
+    try {
+      const newComment = await addComment({
+        videoId: video._id,
+        userId: user.id,
+        username: user.username,
+        photoUrl: user.photoUrl,
+        text
+      });
+      setComments(prev => [...prev, newComment]);
+    } catch (error) {
+      console.error('Failed to add comment', error);
+    }
+  };
 
   useEffect(() => {
-  if (isActive) {
-    videoRef.current.play().catch(error => console.log('Autoplay prevented:', error));
-  } else {
-    videoRef.current.pause();
-    videoRef.current.currentTime = 0;
-  }
-}, [isActive]);
+    if (isActive) {
+      videoRef.current.play().catch(error => console.log('Autoplay prevented:', error));
+    } else {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  }, [isActive]);
 
-// Добавьте этот эффект для автоповтора
-useEffect(() => {
-  if (isActive) {
-    const playVideo = async () => {
-      try {
-        await videoRef.current.play();
-      } catch (error) {
-        console.error('Autoplay prevented:', error);
-        // Попробуйте воспроизвести без звука
-        videoRef.current.muted = true;
-        await videoRef.current.play();
-      }
-    };
-    playVideo();
-  } else {
-    videoRef.current.pause();
-  }
-}, [isActive]);
+  useEffect(() => {
+    if (isActive) {
+      const playVideo = async () => {
+        try {
+          await videoRef.current.play();
+        } catch (error) {
+          console.error('Autoplay prevented:', error);
+          // Попробуйте воспроизвести без звука
+          videoRef.current.muted = true;
+          await videoRef.current.play();
+        }
+      };
+      playVideo();
+    } else {
+      videoRef.current.pause();
+    }
+  }, [isActive]);
+
   useEffect(() => {
     const videoElement = videoRef.current;
     videoElement.addEventListener('ended', onVideoEnd);
@@ -186,14 +175,6 @@ useEffect(() => {
     }
   };
 
-  {showComments && (
-  <Comments
-    comments={comments}
-    onClose={toggleComments}
-    onAddComment={(text) => handleAddComment(video._id, text)}
-  />
-)}
-
   return (
     <div className="video-player-container" onClick={handleTap}>
       <video
@@ -202,6 +183,7 @@ useEffect(() => {
         loop={false}
         playsInline
         muted={isMuted}
+        onError={handleVideoError}
       />
       <div className="video-overlay">
         {isPaused && <div className="play-pause-icon"><BsPlayFill /></div>}
@@ -246,6 +228,13 @@ useEffect(() => {
       >
         <div className="progress" style={{width: `${progress}%`}}></div>
       </div>
+      {showComments && (
+        <Comments
+          comments={comments}
+          onClose={toggleComments}
+          onAddComment={(text) => handleAddComment(video._id, text)}
+        />
+      )}
     </div>
   );
 }

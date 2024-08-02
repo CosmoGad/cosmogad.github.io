@@ -122,6 +122,7 @@ function VideoFeed() {
                 onVideoEnd={handleVideoEnd}
                 isActive={index === currentIndex}
                 onTokenEarned={handleTokenEarned}
+                showComments={showComments}
                 toggleComments={toggleComments}
                 toggleTokenInfo={toggleTokenInfo}
                 isLiked={!!likes[video._id]}

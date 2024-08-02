@@ -27,17 +27,6 @@ app.use((req, res, next) => {
   next();
 });
 
-router.get('/:videoId', async (req, res) => {
-  console.log(`Received GET request for comments. VideoId: ${req.params.videoId}`);
-  try {
-    const comments = await Comment.find({ videoId: req.params.videoId });
-    console.log(`Found ${comments.length} comments for video ${req.params.videoId}`);
-    res.json(comments);
-  } catch (error) {
-    console.error('Error fetching comments:', error);
-    res.status(500).json({ message: error.message });
-  }
-});
 
 app.get('/api/test', (req, res) => {
     res.json({ message: 'API is working' });
