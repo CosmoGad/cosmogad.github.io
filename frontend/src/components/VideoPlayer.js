@@ -3,8 +3,9 @@ import { FaHeart, FaComment, FaShare, FaCoins, FaVolumeMute, FaVolumeUp } from '
 import { BsPauseFill, BsPlayFill } from 'react-icons/bs';
 import '../styles/VideoPlayer.css';
 import { getComments, addComment } from '../api/comments';
+import Comments from './Comments';
 
-const APP_VERSION = "1.3.3";
+const APP_VERSION = "1.3.4";
 
 function VideoPlayer({ video, onVideoEnd,
   currentIndex, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, commentsCount, user }) {
@@ -184,6 +185,14 @@ useEffect(() => {
       }
     }
   };
+
+  {showComments && (
+  <Comments
+    comments={comments}
+    onClose={toggleComments}
+    onAddComment={(text) => handleAddComment(video._id, text)}
+  />
+)}
 
   return (
     <div className="video-player-container" onClick={handleTap}>
