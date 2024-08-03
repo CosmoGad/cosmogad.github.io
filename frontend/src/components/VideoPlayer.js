@@ -5,9 +5,9 @@ import '../styles/VideoPlayer.css';
 import { getComments, addComment } from '../api/comments';
 import Comments from './Comments';
 
-const APP_VERSION = "1.3.5";
+const APP_VERSION = "1.3.6";
 
-function VideoPlayer({ video, onVideoEnd, currentIndex, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, showComments, commentsCount, user }) {
+function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, showComments, commentsCount, user }) {
   const [isPaused, setIsPaused] = useState(false);
   const [showLikeAnimation, setShowLikeAnimation] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -48,19 +48,19 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, isActive, onTokenEarned,
   //}, [currentIndex, videos]);
 
   const handleAddComment = async (text) => {
-    try {
-      const newComment = await addComment({
-        videoId: video._id,
-        userId: user.id,
-        username: user.username,
-        photoUrl: user.photoUrl,
-        text
-      });
-      setComments(prev => [...prev, newComment]);
-    } catch (error) {
-      console.error('Failed to add comment', error);
-    }
-  };
+      try {
+        const newComment = await addComment({
+          videoId: video._id,
+          userId: user.id,
+          username: user.username,
+          photoUrl: user.photoUrl,
+          text
+        });
+        onCommentAdd(newComment);
+      } catch (error) {
+        console.error('Failed to add comment', error);
+      }
+    };
 
   useEffect(() => {
     if (isActive) {
@@ -91,14 +91,31 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, isActive, onTokenEarned,
 
   useEffect(() => {
     const videoElement = videoRef.current;
-    videoElement.addEventListener('ended', onVideoEnd);
-    videoElement.addEventListener('timeupdate', handleTimeUpdate);
+    if (isActive) {
+      const playVideo = async () => {
+        try {
+          await videoElement.play();
+        } catch (error) {
+          console.error('Autoplay prevented:', error);
+          videoElement.muted = true;
+          await videoElement.play();
+        }
+      };
+      playVideo();
+    } else {
+      videoElement.pause();
+    }
+
+    const handleEnded = () => {
+   videoElement.currentTime = 0;
+   videoElement.play().catch(error => console.error('Replay prevented:', error));
+ };
+    videoElement.removeEventListener('ended', onVideoEnd);
 
     return () => {
-      videoElement.removeEventListener('ended', onVideoEnd);
-      videoElement.removeEventListener('timeupdate', handleTimeUpdate);
-    };
-  }, [onVideoEnd]);
+     videoElement.removeEventListener('ended', handleEnded);
+   };
+ }, [isActive]);
 
   const handleTimeUpdate = () => {
     if (videoRef.current && !isDragging) {

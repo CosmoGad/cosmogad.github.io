@@ -130,6 +130,7 @@ function VideoFeed() {
                 likesCount={likes[video._id] || 0}
                 commentsCount={(comments[video._id] || []).length}
                 currentIndex={currentIndex}
+                onCommentAdd={(newComment) => handleCommentAdd(video._id, newComment)}
               />
             </SwiperSlide>
           ))}
@@ -138,13 +139,13 @@ function VideoFeed() {
         <div>Loading videos...</div>
       )}
       {showComments && videos.length > 0 && videos[currentIndex] && (
-  <Comments
-    videoId={videos[currentIndex]._id}
-    comments={comments[videos[currentIndex]._id] || []}
-    onClose={toggleComments}
-    onAddComment={(newComment) => handleCommentAdd(videos[currentIndex]._id, newComment)}
-  />
-)}
+        <Comments
+          videoId={videos[currentIndex]._id}
+          comments={comments[videos[currentIndex]._id] || []}
+          onClose={toggleComments}
+          onAddComment={(newComment) => handleCommentAdd(videos[currentIndex]._id, newComment)}
+        />
+      )}
       {showTokenInfo && (
         <TokenInfo balance={tokenBalance} onClose={toggleTokenInfo} />
       )}
