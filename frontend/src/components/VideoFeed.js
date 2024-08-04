@@ -30,6 +30,18 @@ function VideoFeed({ user }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [videoInfo, setVideoInfo] = useState({});
+
+  useEffect(() => {
+    if (videos[currentIndex]) {
+      setVideoInfo({
+        username: videos[currentIndex].author?.username || 'unknown',
+        description: videos[currentIndex].description
+      });
+    }
+  }, [currentIndex, videos]);
+
+
   useEffect(() => {
     const fetchVideos = async () => {
       try {
@@ -141,6 +153,7 @@ function VideoFeed({ user }) {
               isActive={index === currentIndex}
               onTokenEarned={handleTokenEarned}
               showComments={showComments}
+              videoInfo={videoInfo}
               toggleComments={toggleComments}
               toggleTokenInfo={toggleTokenInfo}
               isLiked={!!likes[video._id]}

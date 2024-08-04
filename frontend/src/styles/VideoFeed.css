@@ -1,7 +1,7 @@
-.video-feed-container {
-  height: 100vh;
-  width: 100vw;
+ .video-feed-container {
   position: fixed;
+  height: 100%;
+  width: 100%;
   top: 0;
   left: 0;
   overflow: hidden;

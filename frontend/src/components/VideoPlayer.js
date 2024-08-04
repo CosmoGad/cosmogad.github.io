@@ -5,7 +5,7 @@ import '../styles/VideoPlayer.css';
 import { getComments, addComment } from '../api/comments';
 import Comments from './Comments';
 
-const APP_VERSION = "1.3.91";
+const APP_VERSION = "1.3.92";
 
 function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, showComments, commentsCount, user }) {
   const [isPaused, setIsPaused] = useState(false);
@@ -128,22 +128,32 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
     }
   };
 
+  // Измените handleTap:
   const handleTap = (e) => {
-  const now = Date.now();
-  const DOUBLE_TAP_DELAY = 300;
+    const now = Date.now();
+    const DOUBLE_TAP_DELAY = 300;
 
-  if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
-    clearTimeout(tapTimeoutRef.current);
-    e.preventDefault();
-    toggleLike();
-  } else {
-    tapTimeoutRef.current = setTimeout(() => {
-      togglePlay();
-    }, DOUBLE_TAP_DELAY);
-  }
+    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+      clearTimeout(tapTimeoutRef.current);
+      e.preventDefault();
+      toggleLike();
+    } else {
+      tapTimeoutRef.current = setTimeout(() => {
+        togglePlay();
+      }, DOUBLE_TAP_DELAY);
+    }
 
-  lastTapRef.current = now;
-};
+    lastTapRef.current = now;
+  };
+
+  // Добавьте эффект для предотвращения закрытия вкладки:
+  useEffect(() => {
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.expand();
+      tg.enableClosingConfirmation();
+    }
+  }, []);
 
   const togglePlay = () => {
     if (videoRef.current) {

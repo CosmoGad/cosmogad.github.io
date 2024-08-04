@@ -10,6 +10,14 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.expand();
+      tg.enableClosingConfirmation();
+    }
+  }, []);
+
+  useEffect(() => {
     let isMounted = true;
 
     const initApp = () => {
