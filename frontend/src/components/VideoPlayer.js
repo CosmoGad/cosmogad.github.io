@@ -5,7 +5,7 @@ import '../styles/VideoPlayer.css';
 import { getComments, addComment } from '../api/comments';
 import Comments from './Comments';
 
-const APP_VERSION = "1.3.9";
+const APP_VERSION = "1.3.91";
 
 function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, showComments, commentsCount, user }) {
   const [isPaused, setIsPaused] = useState(false);

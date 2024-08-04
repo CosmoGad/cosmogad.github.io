@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import VideoPlayer from './VideoPlayer';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Mousewheel, Virtual } from 'swiper';
@@ -63,7 +63,52 @@ function VideoFeed({ user }) {
     preloadNextVideo(currentIndex);
   }, [currentIndex, videos]);
 
-  // ... остальной код компонента
+  const handleVideoEnd = useCallback(() => {
+    if (currentIndex < videos.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  }, [currentIndex, videos.length]);
+
+  const handleTokenEarned = useCallback((amount) => {
+    setTokenBalance(prev => {
+      const newBalance = prev + amount;
+      localStorage.setItem('tokenBalance', newBalance.toString());
+      return newBalance;
+    });
+  }, []);
+
+  const toggleComments = useCallback(() => {
+    setShowComments(prev => !prev);
+  }, []);
+
+  const toggleTokenInfo = useCallback(() => {
+    setShowTokenInfo(prev => !prev);
+  }, []);
+
+  const toggleLike = useCallback((videoId) => {
+    setLikes(prev => {
+      const newLikes = { ...prev };
+      if (newLikes[videoId]) {
+        newLikes[videoId]--;
+        if (newLikes[videoId] === 0) delete newLikes[videoId];
+      } else {
+        newLikes[videoId] = (newLikes[videoId] || 0) + 1;
+      }
+      localStorage.setItem('likes', JSON.stringify(newLikes));
+      return newLikes;
+    });
+  }, []);
+
+  const handleCommentAdd = useCallback((videoId, newComment) => {
+    setComments(prev => {
+      const newComments = {
+        ...prev,
+        [videoId]: [...(prev[videoId] || []), newComment]
+      };
+      localStorage.setItem('comments', JSON.stringify(newComments));
+      return newComments;
+    });
+  }, []);
 
   if (loading) {
     return <div className="loading-message">Loading videos...</div>;
