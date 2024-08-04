@@ -69,12 +69,12 @@ function VideoFeed({ user }) {
         const video = document.createElement('video');
         video.preload = 'auto';
         video.src = videos[index + 1].url;
+        video.onerror = () => console.error('Error preloading video:', videos[index + 1].url);
       }
     };
 
     preloadNextVideo(currentIndex);
   }, [currentIndex, videos]);
-
   const handleVideoEnd = useCallback(() => {
     if (currentIndex < videos.length - 1) {
       setCurrentIndex(currentIndex + 1);

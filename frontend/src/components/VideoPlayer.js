@@ -5,7 +5,7 @@ import '../styles/VideoPlayer.css';
 import { getComments, addComment } from '../api/comments';
 import Comments from './Comments';
 
-const APP_VERSION = "1.3.92";
+const APP_VERSION = "1.3.93";
 
 function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, showComments, commentsCount, user }) {
   const [isPaused, setIsPaused] = useState(false);
@@ -128,23 +128,40 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
     }
   };
 
+  useEffect(() => {
+    const playVideo = async () => {
+      if (isActive && videoRef.current) {
+        try {
+          await videoRef.current.play();
+        } catch (error) {
+          console.error('Autoplay prevented:', error);
+          // Попробуйте воспроизвести без звука
+          videoRef.current.muted = true;
+          await videoRef.current.play();
+        }
+      }
+    };
+
+    playVideo();
+  }, [isActive]);
+
   // Измените handleTap:
   const handleTap = (e) => {
-    const now = Date.now();
-    const DOUBLE_TAP_DELAY = 300;
+  const now = Date.now();
+  const DOUBLE_TAP_DELAY = 300;
 
-    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
-      clearTimeout(tapTimeoutRef.current);
-      e.preventDefault();
-      toggleLike();
-    } else {
-      tapTimeoutRef.current = setTimeout(() => {
-        togglePlay();
-      }, DOUBLE_TAP_DELAY);
-    }
+  if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+    clearTimeout(tapTimeoutRef.current);
+    e.preventDefault();
+    toggleLike();
+  } else {
+    tapTimeoutRef.current = setTimeout(() => {
+      togglePlay();
+    }, DOUBLE_TAP_DELAY);
+  }
 
-    lastTapRef.current = now;
-  };
+  lastTapRef.current = now;
+};
 
   // Добавьте эффект для предотвращения закрытия вкладки:
   useEffect(() => {
