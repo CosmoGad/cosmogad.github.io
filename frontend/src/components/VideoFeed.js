@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import VideoPlayer from './VideoPlayer';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Mousewheel, Virtual } from 'swiper';
@@ -27,19 +27,40 @@ function VideoFeed() {
   });
   const [showComments, setShowComments] = useState(false);
   const [showTokenInfo, setShowTokenInfo] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const toggleLike = useCallback((videoId) => {
+    setLikes(prev => {
+      const newLikes = { ...prev };
+      if (newLikes[videoId]) {
+        newLikes[videoId]--;
+        if (newLikes[videoId] === 0) delete newLikes[videoId];
+      } else {
+        newLikes[videoId] = (newLikes[videoId] || 0) + 1;
+      }
+      return newLikes;
+    });
+  }, []);
+
+  const fetchVideos = useCallback(async () => {
+    setLoading(true);
     try {
-      const videoObjects = videoUrls.map((url, index) => ({
+      const fetchedVideos = videoUrls.map((url, index) => ({
         _id: index,
         url,
         description: `This is video number ${index + 1} #fun #crypto`,
       }));
-      setVideos(videoObjects);
+      setVideos(fetchedVideos);
     } catch (error) {
       console.error('Error loading videos:', error);
+    } finally {
+      setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    fetchVideos();
+  }, [fetchVideos]);
 
   useEffect(() => {
     try {
@@ -90,22 +111,13 @@ function VideoFeed() {
     setShowTokenInfo(!showTokenInfo);
   };
 
-  const toggleLike = (videoId) => {
-    setLikes(prev => {
-      const newLikes = { ...prev };
-      if (newLikes[videoId]) {
-        newLikes[videoId]--;
-        if (newLikes[videoId] === 0) delete newLikes[videoId];
-      } else {
-        newLikes[videoId] = (newLikes[videoId] || 0) + 1;
-      }
-      return newLikes;
-    });
-  };
+
 
   return (
     <div className="video-feed-container">
-      {videos.length > 0 ? (
+      {loading ? (
+        <div className="loading">Loading videos...</div>
+      ) : videos.length > 0 ? (
         <Swiper
           direction={'vertical'}
           slidesPerView={1}
@@ -114,6 +126,9 @@ function VideoFeed() {
           virtual
           className="video-feed-swiper"
           onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
+          onReachEnd={() => {
+            console.log('Reached end of videos, load more');
+          }}
         >
           {videos.map((video, index) => (
             <SwiperSlide key={video._id} virtualIndex={index}>
@@ -136,7 +151,7 @@ function VideoFeed() {
           ))}
         </Swiper>
       ) : (
-        <div>Loading videos...</div>
+        <div className="no-videos">No videos available</div>
       )}
       {showComments && videos.length > 0 && videos[currentIndex] && (
         <Comments
