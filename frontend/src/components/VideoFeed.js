@@ -79,6 +79,13 @@ function VideoFeed() {
   }, [likes]);
 
   useEffect(() => {
+    if (videos[currentIndex + 1]) {
+      const nextVideo = new Image();
+      nextVideo.src = videos[currentIndex + 1].url;
+    }
+  }, [currentIndex, videos]);
+
+  useEffect(() => {
     try {
       localStorage.setItem('comments', JSON.stringify(comments));
     } catch (error) {

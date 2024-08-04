@@ -129,25 +129,21 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
   };
 
   const handleTap = (e) => {
-    const now = Date.now();
-    const DOUBLE_TAP_DELAY = 300;
+  const now = Date.now();
+  const DOUBLE_TAP_DELAY = 300;
 
-    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
-      clearTimeout(tapTimeoutRef.current);
-      e.preventDefault();
-      if (!isLiked) {
-        toggleLike();
-        setShowLikeAnimation(true);
-        setTimeout(() => setShowLikeAnimation(false), 1000);
-      }
-    } else {
-      tapTimeoutRef.current = setTimeout(() => {
-        togglePlay();
-      }, DOUBLE_TAP_DELAY);
-    }
+  if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+    clearTimeout(tapTimeoutRef.current);
+    e.preventDefault();
+    toggleLike();
+  } else {
+    tapTimeoutRef.current = setTimeout(() => {
+      togglePlay();
+    }, DOUBLE_TAP_DELAY);
+  }
 
-    lastTapRef.current = now;
-  };
+  lastTapRef.current = now;
+};
 
   const togglePlay = () => {
     if (videoRef.current) {

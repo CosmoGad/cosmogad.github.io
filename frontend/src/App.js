@@ -32,6 +32,14 @@ function App() {
       }
     };
 
+    useEffect(() => {
+      const tg = window.Telegram?.WebApp;
+      if (tg) {
+        tg.expand();
+        tg.enableClosingConfirmation();
+      }
+    }, []);
+
     setTimeout(initApp, 1000);
   }, []);
 
