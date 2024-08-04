@@ -29,6 +29,18 @@ function VideoFeed() {
   const [showTokenInfo, setShowTokenInfo] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const preloadNextVideo = (index) => {
+      if (videos[index + 1]) {
+        const video = new Video();
+        video.preload = 'auto';
+        video.src = videos[index + 1].url;
+      }
+    };
+
+    preloadNextVideo(currentIndex);
+  }, [currentIndex, videos]);
+
   const toggleLike = useCallback((videoId) => {
     setLikes(prev => {
       const newLikes = { ...prev };
