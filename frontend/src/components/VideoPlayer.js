@@ -5,7 +5,7 @@ import '../styles/VideoPlayer.css';
 import { getComments, addComment } from '../api/comments';
 import Comments from './Comments';
 
-const APP_VERSION = "1.3.7";
+const APP_VERSION = "1.3.8";
 
 function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, showComments, commentsCount, user }) {
   const [isPaused, setIsPaused] = useState(false);
@@ -108,6 +108,26 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
     }
   };
 
+  const handleTouchStart = (e) => {
+    const touch = e.touches[0];
+    lastTapRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+      time: Date.now()
+    };
+  };
+
+  const handleTouchEnd = (e) => {
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - lastTapRef.current.x;
+    const deltaY = touch.clientY - lastTapRef.current.y;
+    const deltaTime = Date.now() - lastTapRef.current.time;
+
+    if (deltaTime < 300 && Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
+      handleTap(e);
+    }
+  };
+
   const handleTap = (e) => {
     const now = Date.now();
     const DOUBLE_TAP_DELAY = 300;
@@ -178,11 +198,11 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
 
   return (
     <div
-      className="video-player-container"
-      onClick={handleTap}
-      onTouchStart={handleTap}
-      onTouchEnd={(e) => e.preventDefault()}
-    >
+    className="video-player-container"
+    onClick={handleTap}
+    onTouchStart={handleTouchStart}
+    onTouchEnd={handleTouchEnd}
+  >
       <video
         ref={videoRef}
         src={video.url}
