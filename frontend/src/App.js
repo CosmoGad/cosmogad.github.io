@@ -7,6 +7,7 @@ import './styles/App.css';
 function App() {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
@@ -32,6 +33,7 @@ function App() {
         console.log("Telegram WebApp not found");
         setError('Telegram WebApp is not available. Please open this app from Telegram.');
       }
+      setLoading(false);
     };
 
     const timeoutId = setTimeout(initApp, 1000);
@@ -42,12 +44,16 @@ function App() {
     };
   }, []);
 
+  if (loading) {
+    return <div className="loading-message">Loading...</div>;
+  }
+
   if (error) {
     return <div className="error-message">{error}</div>;
   }
 
   if (!user) {
-    return <div className="loading-message">Loading...</div>;
+    return <div className="error-message">User not found. Please try again.</div>;
   }
 
   return (
