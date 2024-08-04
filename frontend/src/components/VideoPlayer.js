@@ -5,7 +5,7 @@ import '../styles/VideoPlayer.css';
 import { getComments, addComment } from '../api/comments';
 import Comments from './Comments';
 
-const APP_VERSION = "1.3.93";
+const APP_VERSION = "1.3.94";
 
 function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, showComments, commentsCount, user }) {
   const [isPaused, setIsPaused] = useState(false);
@@ -36,13 +36,12 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
   };
 
   const handleVideoError = (error) => {
-  console.error('Error loading video:', error);
-  // Показать пользователю сообщение об ошибке
-  alert('Failed to load video. Please check your internet connection and try again.');
-};
+    console.error('Error loading video:', error);
+    alert('Failed to load video. Please check your internet connection and try again.');
+  };
 
   const handleAddComment = async (text) => {
-    if (!text.trim()) return;  // Не добавляем пустые комментарии
+    if (!text.trim()) return;
 
     try {
       const newComment = await addComment({
@@ -64,7 +63,7 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
     const videoElement = videoRef.current;
     if (!videoElement) return;
 
-    const handlePlay = async () => {
+    const playVideo = async () => {
       if (isActive) {
         try {
           await videoElement.play();
@@ -87,11 +86,11 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
       }
     };
 
-    handlePlay();
+    playVideo();
 
     const handleEnded = () => {
       videoElement.currentTime = 0;
-      videoElement.play().catch(error => console.error('Replay prevented:', error));
+      onVideoEnd();
     };
 
     videoElement.addEventListener('ended', handleEnded);
@@ -99,7 +98,7 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
     return () => {
       videoElement.removeEventListener('ended', handleEnded);
     };
-  }, [isActive]);
+  }, [isActive, onVideoEnd]);
 
   const handleTimeUpdate = () => {
     if (videoRef.current && !isDragging) {
@@ -108,62 +107,25 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
     }
   };
 
-  const handleTouchStart = (e) => {
-    const touch = e.touches[0];
-    lastTapRef.current = {
-      x: touch.clientX,
-      y: touch.clientY,
-      time: Date.now()
-    };
-  };
-
-  const handleTouchEnd = (e) => {
-    const touch = e.changedTouches[0];
-    const deltaX = touch.clientX - lastTapRef.current.x;
-    const deltaY = touch.clientY - lastTapRef.current.y;
-    const deltaTime = Date.now() - lastTapRef.current.time;
-
-    if (deltaTime < 300 && Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
-      handleTap(e);
-    }
-  };
-
-  useEffect(() => {
-    const playVideo = async () => {
-      if (isActive && videoRef.current) {
-        try {
-          await videoRef.current.play();
-        } catch (error) {
-          console.error('Autoplay prevented:', error);
-          // Попробуйте воспроизвести без звука
-          videoRef.current.muted = true;
-          await videoRef.current.play();
-        }
-      }
-    };
-
-    playVideo();
-  }, [isActive]);
-
-  // Измените handleTap:
   const handleTap = (e) => {
-  const now = Date.now();
-  const DOUBLE_TAP_DELAY = 300;
+    const now = Date.now();
+    const DOUBLE_TAP_DELAY = 300;
 
-  if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
-    clearTimeout(tapTimeoutRef.current);
-    e.preventDefault();
-    toggleLike();
-  } else {
-    tapTimeoutRef.current = setTimeout(() => {
-      togglePlay();
-    }, DOUBLE_TAP_DELAY);
-  }
+    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+      clearTimeout(tapTimeoutRef.current);
+      e.preventDefault();
+      toggleLike();
+      setShowLikeAnimation(true);
+      setTimeout(() => setShowLikeAnimation(false), 1000);
+    } else {
+      tapTimeoutRef.current = setTimeout(() => {
+        togglePlay();
+      }, DOUBLE_TAP_DELAY);
+    }
 
-  lastTapRef.current = now;
-};
+    lastTapRef.current = now;
+  };
 
-  // Добавьте эффект для предотвращения закрытия вкладки:
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
     if (tg) {
@@ -219,19 +181,11 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
     }
   };
 
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.load();
-    }
-  }, [video.url]);
-
   return (
     <div
-    className="video-player-container"
-    onClick={handleTap}
-    onTouchStart={handleTouchStart}
-    onTouchEnd={handleTouchEnd}
-  >
+      className="video-player-container"
+      onClick={handleTap}
+    >
       <video
         ref={videoRef}
         src={video.url}
