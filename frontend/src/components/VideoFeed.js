@@ -43,20 +43,22 @@ function VideoFeed() {
   }, []);
 
   const fetchVideos = useCallback(async () => {
-    setLoading(true);
-    try {
-      const fetchedVideos = videoUrls.map((url, index) => ({
-        _id: index,
-        url,
-        description: `This is video number ${index + 1} #fun #crypto`,
-      }));
-      setVideos(fetchedVideos);
-    } catch (error) {
-      console.error('Error loading videos:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  setLoading(true);
+  try {
+    // Замените на реальный API-запрос, когда он будет готов
+    const fetchedVideos = videoUrls.map((url, index) => ({
+      _id: index,
+      url,
+      description: `This is video number ${index + 1} #fun #crypto`,
+    }));
+    setVideos(fetchedVideos);
+  } catch (error) {
+    console.error('Error loading videos:', error);
+    setError('Failed to load videos. Please check your internet connection and try again.');
+  } finally {
+    setLoading(false);
+  }
+}, []);
 
   useEffect(() => {
     fetchVideos();

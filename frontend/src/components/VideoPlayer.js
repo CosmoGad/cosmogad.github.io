@@ -36,10 +36,10 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
   };
 
   const handleVideoError = (error) => {
-    console.error('Error loading video:', error);
-    // Показать пользователю сообщение об ошибке
-    alert('Failed to load video. Please try again later.');
-  };
+  console.error('Error loading video:', error);
+  // Показать пользователю сообщение об ошибке
+  alert('Failed to load video. Please check your internet connection and try again.');
+};
 
   const handleAddComment = async (text) => {
     if (!text.trim()) return;  // Не добавляем пустые комментарии
