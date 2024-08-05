@@ -63,20 +63,17 @@ function VideoFeed({ user }) {
   }, []);
 
   useEffect(() => {
-  const preloadVideos = (startIndex, count) => {
-    for (let i = startIndex; i < startIndex + count && i < videos.length; i++) {
-      const video = document.createElement('video');
-      video.preload = 'metadata';
-      video.src = videos[i].url;
-      video.onloadedmetadata = () => console.log(`Video ${i} preloaded`);
-      video.onerror = (e) => console.error(`Error preloading video ${i}:`, e);
-    }
-  };
+    const preloadVideos = (startIndex, count) => {
+      for (let i = startIndex; i < startIndex + count && i < videos.length; i++) {
+        const video = new Image();
+        video.src = videos[i].thumbnailUrl || videos[i].url;
+      }
+    };
 
-  if (videos.length > 0) {
-    preloadVideos(currentIndex, 3); // Предзагрузка текущего и двух следующих видео
-  }
-}, [currentIndex, videos]);
+    if (videos.length > 0) {
+      preloadVideos(currentIndex, 3);
+    }
+  }, [currentIndex, videos]);
 
   const handleVideoEnd = useCallback(() => {
     if (currentIndex < videos.length - 1) {

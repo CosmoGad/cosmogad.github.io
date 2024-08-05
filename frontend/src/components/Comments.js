@@ -13,7 +13,7 @@ function Comments({ comments, onClose, onAddComment }) {
 
   return (
     <div className="comments-section" id="commentsSection">
-      <button className="close-button" onClick={onClose}>×</button>
+      <button className="close-button" onClick={onClose} aria-label="Close comments">×</button>
       {comments.map((comment, index) => (
         <div key={index} className="comment">
           <div className="user">{comment.user?.username || 'Новый пользователь'}</div>

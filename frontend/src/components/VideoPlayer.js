@@ -5,7 +5,7 @@ import '../styles/VideoPlayer.css';
 import { getComments, addComment } from '../api/comments';
 import Comments from './Comments';
 
-const APP_VERSION = "1.3.96";
+const APP_VERSION = "1.3.97";
 
 function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, showComments, commentsCount, user }) {
   const [isPaused, setIsPaused] = useState(false);
@@ -60,41 +60,37 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
   };
 
   useEffect(() => {
-    const videoElement = videoRef.current;
-    if (!videoElement) return;
+  const videoElement = videoRef.current;
+  if (!videoElement) return;
 
-    const playVideo = async () => {
-      if (isActive) {
-        videoElement.currentTime = 0;
-        try {
-          await videoElement.play();
-          setIsPaused(false);
-        } catch (error) {
-          console.error('Autoplay prevented:', error);
-          setIsPaused(true);
-        }
-      } else {
-        videoElement.pause();
-        videoElement.currentTime = 0;
+  const playVideo = async () => {
+    if (isActive) {
+      try {
+        await videoElement.play();
+        setIsPaused(false);
+      } catch (error) {
+        console.error('Autoplay prevented:', error);
         setIsPaused(true);
       }
-    };
-
-    playVideo();
-
-    const handleEnded = () => {
-      videoElement.currentTime = 0;
-      onVideoEnd();
-    };
-
-    videoElement.addEventListener('ended', handleEnded);
-
-    return () => {
+    } else {
       videoElement.pause();
-      videoElement.currentTime = 0;
-      videoElement.removeEventListener('ended', handleEnded);
-    };
-  }, [isActive, onVideoEnd]);
+      setIsPaused(true);
+    }
+  };
+
+  playVideo();
+
+  const handleEnded = () => {
+    onVideoEnd();
+  };
+
+  videoElement.addEventListener('ended', handleEnded);
+
+  return () => {
+    videoElement.pause();
+    videoElement.removeEventListener('ended', handleEnded);
+  };
+}, [isActive, onVideoEnd]);
 
   const handleTimeUpdate = () => {
     if (videoRef.current && !isDragging) {
@@ -224,20 +220,22 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
       className="video-player-container"
       onClick={handleTap}
     >
-      <video
-        ref={videoRef}
-        src={video.url}
-        loop={false}
-        playsInline
-        muted={isMuted}
-        onError={handleVideoError}
-        onTimeUpdate={handleTimeUpdate}
-        preload="auto"
-        poster={video.thumbnailUrl}
-      >
-        <source src={video.url} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+    <video
+ref={videoRef}
+src={video.url}
+loop={false}
+playsInline
+webkit-playsinline="true"
+x-webkit-airplay="allow"
+preload="auto"
+muted={isMuted}
+onError={handleVideoError}
+onTimeUpdate={handleTimeUpdate}
+poster={video.thumbnailUrl}
+>
+<source src={video.url} type="video/mp4" />
+Your browser does not support the video tag.
+</video>
       <div className="video-overlay">
         {isPaused && <div className="play-pause-icon"><BsPlayFill /></div>}
         <div className="video-info">

@@ -27,6 +27,23 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Cache-Control', 'max-age=31536000, immutable');
+  res.setHeader('Content-Security-Policy', "frame-ancestors 'self'");
+  next();
+});
+
+app.use('/api/comments', (req, res, next) => {
+  commentRoutes(req, res, (err) => {
+    if (err) {
+      console.error('Error in comments route:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+    } else {
+      next();
+    }
+  });
+});
 
 app.get('/api/test', (req, res) => {
     res.json({ message: 'API is working' });
