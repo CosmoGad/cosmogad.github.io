@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaHeart, FaComment, FaShare, FaCoins, FaVolumeMute, FaVolumeUp } from 'react-icons/fa';
-import { BsPauseFill, BsPlayFill } from 'react-icons/bs';
+import { BsPlayFill } from 'react-icons/bs';
 import '../styles/VideoPlayer.css';
 import { getComments, addComment } from '../api/comments';
 import Comments from './Comments';
 
-const APP_VERSION = "1.3.95";
+const APP_VERSION = "1.3.96";
 
 function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, showComments, commentsCount, user }) {
   const [isPaused, setIsPaused] = useState(false);
@@ -37,10 +37,8 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
 
   const handleVideoError = (error) => {
     console.error('Error loading video:', error);
-    // Показать пользователю сообщение об ошибке
     alert(`Failed to load video: ${error.message}. Please check your internet connection and try again.`);
   };
-
 
   const handleAddComment = async (text) => {
     if (!text.trim()) return;
@@ -67,19 +65,13 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
 
     const playVideo = async () => {
       if (isActive) {
+        videoElement.currentTime = 0;
         try {
           await videoElement.play();
           setIsPaused(false);
         } catch (error) {
           console.error('Autoplay prevented:', error);
-          videoElement.muted = true;
-          try {
-            await videoElement.play();
-            setIsPaused(false);
-          } catch (mutedError) {
-            console.error('Muted autoplay also prevented:', mutedError);
-            setIsPaused(true);
-          }
+          setIsPaused(true);
         }
       } else {
         videoElement.pause();
@@ -98,6 +90,8 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
     videoElement.addEventListener('ended', handleEnded);
 
     return () => {
+      videoElement.pause();
+      videoElement.currentTime = 0;
       videoElement.removeEventListener('ended', handleEnded);
     };
   }, [isActive, onVideoEnd]);
@@ -126,25 +120,30 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
   }, []);
 
   useEffect(() => {
-  const videoElement = videoRef.current;
-  if (!videoElement) return;
+    const videoElement = videoRef.current;
+    if (!videoElement) return;
 
-  const logEvent = (event) => console.log(`Video event: ${event.type}`);
+    const handleLoadError = () => {
+      console.error('Failed to load video:', video.url);
+    };
+    const logEvent = (event) => console.log(`Video event: ${event.type}`);
 
-  videoElement.addEventListener('loadstart', logEvent);
-  videoElement.addEventListener('progress', logEvent);
-  videoElement.addEventListener('canplay', logEvent);
-  videoElement.addEventListener('canplaythrough', logEvent);
-  videoElement.addEventListener('error', logEvent);
+    videoElement.addEventListener('loadstart', logEvent);
+    videoElement.addEventListener('progress', logEvent);
+    videoElement.addEventListener('canplay', logEvent);
+    videoElement.addEventListener('canplaythrough', logEvent);
+    videoElement.addEventListener('error', logEvent);
+    videoElement.addEventListener('error', handleLoadError);
 
-  return () => {
-    videoElement.removeEventListener('loadstart', logEvent);
-    videoElement.removeEventListener('progress', logEvent);
-    videoElement.removeEventListener('canplay', logEvent);
-    videoElement.removeEventListener('canplaythrough', logEvent);
-    videoElement.removeEventListener('error', logEvent);
-  };
-}, []);
+    return () => {
+      videoElement.removeEventListener('loadstart', logEvent);
+      videoElement.removeEventListener('progress', logEvent);
+      videoElement.removeEventListener('canplay', logEvent);
+      videoElement.removeEventListener('canplaythrough', logEvent);
+      videoElement.removeEventListener('error', logEvent);
+      videoElement.removeEventListener('error', handleLoadError);
+    };
+  }, [video.url]);
 
   const handleTap = (e) => {
     const now = Date.now();
@@ -225,20 +224,20 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
       className="video-player-container"
       onClick={handleTap}
     >
-    <video
-    ref={videoRef}
-    src={video.url}
-    loop={false}
-    playsInline
-    muted={isMuted}
-    onError={handleVideoError}
-    onTimeUpdate={handleTimeUpdate}
-    preload="auto"
-    poster={video.thumbnailUrl}
-  >
-    <source src={video.url} type="video/mp4" />
-    Your browser does not support the video tag.
-  </video>
+      <video
+        ref={videoRef}
+        src={video.url}
+        loop={false}
+        playsInline
+        muted={isMuted}
+        onError={handleVideoError}
+        onTimeUpdate={handleTimeUpdate}
+        preload="auto"
+        poster={video.thumbnailUrl}
+      >
+        <source src={video.url} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
       <div className="video-overlay">
         {isPaused && <div className="play-pause-icon"><BsPlayFill /></div>}
         <div className="video-info">

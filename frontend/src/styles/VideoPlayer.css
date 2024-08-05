@@ -124,20 +124,19 @@
 }
 
 @media (max-width: 768px) {
-  .video-info {
-    font-size: 14px;
-    bottom: 80px;
-    left: 10px;
-    right: 70px;
-  }
-
   .video-actions {
     right: 10px;
     bottom: 80px;
   }
 
   .action-button {
-    font-size: 24px;
-    margin: 10px 0;
+    font-size: 20px;
+    margin: 8px 0;
+  }
+
+  .video-info {
+    bottom: 70px;
+    left: 10px;
+    right: 60px;
   }
 }
