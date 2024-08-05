@@ -5,7 +5,7 @@ import '../styles/VideoPlayer.css';
 import { getComments, addComment } from '../api/comments';
 import Comments from './Comments';
 
-const APP_VERSION = "1.3.94";
+const APP_VERSION = "1.3.95";
 
 function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, showComments, commentsCount, user }) {
   const [isPaused, setIsPaused] = useState(false);
@@ -37,8 +37,10 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
 
   const handleVideoError = (error) => {
     console.error('Error loading video:', error);
-    alert('Failed to load video. Please check your internet connection and try again.');
+    // Показать пользователю сообщение об ошибке
+    alert(`Failed to load video: ${error.message}. Please check your internet connection and try again.`);
   };
+
 
   const handleAddComment = async (text) => {
     if (!text.trim()) return;
@@ -106,6 +108,43 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
       setProgress(progress);
     }
   };
+
+  useEffect(() => {
+    const checkNetwork = () => {
+      if (!navigator.onLine) {
+        alert('You are offline. Please check your internet connection.');
+      }
+    };
+
+    window.addEventListener('online', checkNetwork);
+    window.addEventListener('offline', checkNetwork);
+
+    return () => {
+      window.removeEventListener('online', checkNetwork);
+      window.removeEventListener('offline', checkNetwork);
+    };
+  }, []);
+
+  useEffect(() => {
+  const videoElement = videoRef.current;
+  if (!videoElement) return;
+
+  const logEvent = (event) => console.log(`Video event: ${event.type}`);
+
+  videoElement.addEventListener('loadstart', logEvent);
+  videoElement.addEventListener('progress', logEvent);
+  videoElement.addEventListener('canplay', logEvent);
+  videoElement.addEventListener('canplaythrough', logEvent);
+  videoElement.addEventListener('error', logEvent);
+
+  return () => {
+    videoElement.removeEventListener('loadstart', logEvent);
+    videoElement.removeEventListener('progress', logEvent);
+    videoElement.removeEventListener('canplay', logEvent);
+    videoElement.removeEventListener('canplaythrough', logEvent);
+    videoElement.removeEventListener('error', logEvent);
+  };
+}, []);
 
   const handleTap = (e) => {
     const now = Date.now();
@@ -186,15 +225,20 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
       className="video-player-container"
       onClick={handleTap}
     >
-      <video
-        ref={videoRef}
-        src={video.url}
-        loop={false}
-        playsInline
-        muted={isMuted}
-        onError={handleVideoError}
-        onTimeUpdate={handleTimeUpdate}
-      />
+    <video
+    ref={videoRef}
+    src={video.url}
+    loop={false}
+    playsInline
+    muted={isMuted}
+    onError={handleVideoError}
+    onTimeUpdate={handleTimeUpdate}
+    preload="auto"
+    poster={video.thumbnailUrl}
+  >
+    <source src={video.url} type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
       <div className="video-overlay">
         {isPaused && <div className="play-pause-icon"><BsPlayFill /></div>}
         <div className="video-info">
