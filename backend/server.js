@@ -49,6 +49,14 @@ app.get('/api/test', (req, res) => {
     res.json({ message: 'API is working' });
 });
 
+const corsOptions = {
+  origin: ' http://localhost:3000', 
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+
 const server = app.listen(port, async () => {
     console.log(`Сервер запущен на порту ${port}`);
     try {
