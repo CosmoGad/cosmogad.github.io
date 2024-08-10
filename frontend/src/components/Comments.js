@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/Comments.css';
+import 'src/styles/Comments.css';
 
 function Comments({ comments, onClose, onAddComment }) {
   const [newCommentText, setNewCommentText] = useState('');

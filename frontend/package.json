@@ -4,7 +4,7 @@
   "homepage": "https://cosmogad.github.io",
   "scripts": {
     "start": "react-scripts start",
-   "build": "echo 'Starting build' && dir /s /b src && react-scripts build",
+   "build": "echo 'Starting build' && (if exist src (dir /s /b src) else (find src -type d; find src -type f)) && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
      "clean": "rm -rf node_modules && npm cache clean --force && npm install",
