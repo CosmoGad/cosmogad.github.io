@@ -14,9 +14,15 @@ const port = process.env.PORT || 3001;
 console.log('TELEGRAM_BOT_TOKEN:', process.env.TELEGRAM_BOT_TOKEN);
 console.log('WEBAPP_URL:', process.env.WEBAPP_URL);
 
-// Настройка CORS
 const corsOptions = {
-  origin: ['http://localhost:3000', 'https://cosmogad.github.io'],
+  origin: (origin, callback) => {
+    const allowedOrigins = ['http://localhost:3000', 'https://cosmogad.github.io'];
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
@@ -24,11 +30,26 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Логирование запросов
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (corsOptions.origin(origin, () => {})) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
+
 app.use((req, res, next) => {
   console.log('Request received:', req.method, req.url);
   console.log('Request headers:', JSON.stringify(req.headers, null, 2));
-  console.log('CORS options:', JSON.stringify(corsOptions, null, 2));
+  console.log('Response headers:', JSON.stringify(res.getHeaders(), null, 2));
   next();
 });
 
@@ -41,11 +62,6 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-// Обработка OPTIONS запросов
-app.options('*', (req, res) => {
-  res.sendStatus(200);
-});
-
 app.use('/api/auth', authRoutes);
 app.use('/api/videos', videoRoutes);
 app.use('/api/comments', commentRoutes);
@@ -55,7 +71,6 @@ app.get('/api/test', (req, res) => {
     res.json({ message: 'API is working' });
 });
 
-// Обработка ошибок CORS
 app.use((err, req, res, next) => {
   if (err.message === 'Not allowed by CORS') {
     res.status(403).json({ message: 'CORS error: Origin not allowed' });

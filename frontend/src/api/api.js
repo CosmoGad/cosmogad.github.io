@@ -8,22 +8,18 @@ if (!API_URL) {
 
 const api = axios.create({
     baseURL: API_URL,
-    withCredentials: true,
+    // withCredentials: true,  // Временно закомментировано для тестирования
     headers: {
         'Content-Type': 'application/json',
         'X-Requested-With': 'XMLHttpRequest'
     }
 });
 
-// Интерцептор для обработки OPTIONS запросов
 api.interceptors.request.use(config => {
-    if (config.method === 'options') {
-        config.headers['Access-Control-Request-Method'] = config.method;
-    }
+    config.headers['Access-Control-Allow-Origin'] = 'https://cosmogad.github.io';
     return config;
 });
 
-// Интерцептор для обработки ошибок
 api.interceptors.response.use(
     response => response,
     error => {
