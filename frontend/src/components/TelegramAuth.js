@@ -1,23 +1,33 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
+import { login } from '../api/api';
 
 function TelegramAuth({ onAuth }) {
-  useEffect(() => {
-    window.TelegramLoginWidget = {
-      dataOnauth: (user) => onAuth(user)
-    };
+  const handleAuth = useCallback(async (user) => {
+    try {
+      const response = await login(user);
+      onAuth(response.data);
+    } catch (error) {
+      console.error('Authentication failed:', error);
+      // Показать пользователю сообщение об ошибке
+    }
+  }, [onAuth]);
 
+  useEffect(() => {
     const script = document.createElement('script');
-    script.src = "https://telegram.org/js/telegram-widget.js?5";
-    script.setAttribute('data-telegram-login', "YOUR_BOT_NAME");
+    script.src = "https://telegram.org/js/telegram-widget.js?21";
+    script.setAttribute('data-telegram-login', process.env.REACT_APP_TELEGRAM_BOT_NAME);
     script.setAttribute('data-size', "large");
-    script.setAttribute('data-onauth', "TelegramLoginWidget.dataOnauth(user)");
+    script.setAttribute('data-onauth', "window.onTelegramAuth(user)");
     script.setAttribute('data-request-access', "write");
     document.body.appendChild(script);
 
+    window.onTelegramAuth = handleAuth;
+
     return () => {
+      delete window.onTelegramAuth;
       document.body.removeChild(script);
     };
-  }, [onAuth]);
+  }, [handleAuth]);
 
   return <div id="telegram-login"></div>;
 }

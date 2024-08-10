@@ -2,11 +2,11 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { FaHeart, FaComment, FaShare, FaCoins, FaVolumeMute, FaVolumeUp } from 'react-icons/fa';
 import { BsPlayFill } from 'react-icons/bs';
 import '../styles/VideoPlayer.css';
-import { getComments, addComment } from '../api/comments';
+import { getComments, addComment } from '../api/api';
 import Comments from './Comments';
 import ErrorMessage from './ErrorMessage';
 
-const APP_VERSION = "1.3.98";
+const APP_VERSION = "1.3.99";
 
 function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, showComments, commentsCount, user }) {
   const [isPaused, setIsPaused] = useState(false);
@@ -52,13 +52,7 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
     if (!text.trim()) return;
 
     try {
-      const newComment = await addComment({
-        videoId: video._id,
-        userId: user?.id,
-        username: user?.username || 'Anonymous',
-        photoUrl: user?.photoUrl,
-        text: text.trim()
-      });
+      const newComment = await addComment(video._id, text.trim());
       onCommentAdd(newComment);
       setComments(prevComments => [...prevComments, newComment]);
     } catch (error) {
@@ -201,41 +195,54 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
         onTimeUpdate={handleTimeUpdate}
         onEnded={onVideoEnd}
         poster={video.thumbnailUrl}
+        aria-label={`Video by ${video.author?.username || 'unknown'}`}
       >
         <source src={video.url} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
       <div className="video-overlay">
-        {isPaused && <div className="play-pause-icon"><BsPlayFill /></div>}
+        {isPaused && <div className="play-pause-icon" aria-label="Play video"><BsPlayFill /></div>}
         <div className="video-info">
-          <div className="username">@{video.author?.username || 'unknown'}</div>
-          <div className="video-description">{video.description}</div>
+          <div className="username" aria-label="Video author">@{video.author?.username || 'unknown'}</div>
+          <div className="video-description" aria-label="Video description">{video.description}</div>
         </div>
         <div className="video-actions">
-          <button className="action-button" onClick={toggleLike}>
+          <button className="action-button" onClick={toggleLike} aria-label={`Like video. Current likes: ${likesCount}`}>
             <FaHeart color={isLiked ? 'red' : 'white'} />
             <span className="action-count">{likesCount}</span>
           </button>
-          <button className="action-button" onClick={toggleComments}>
+          <button className="action-button" onClick={toggleComments} aria-label={`Show comments. Current comments: ${commentsCount}`}>
             <FaComment />
             <span className="action-count">{commentsCount}</span>
           </button>
-          <button className="action-button">
+          <button className="action-button" aria-label="Share video">
             <FaShare />
           </button>
-          <button className="action-button" onClick={toggleTokenInfo}>
+          <button className="action-button" onClick={toggleTokenInfo} aria-label="Show token info">
             <FaCoins />
           </button>
-          <button className="action-button" onClick={toggleMute}>
+          <button className="action-button" onClick={toggleMute} aria-label={isMuted ? "Unmute video" : "Mute video"}>
             {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
           </button>
         </div>
       </div>
-      {showLikeAnimation && <div className="like-animation">❤️</div>}
-      <div className="progress-bar" ref={progressBarRef} onClick={handleProgressBarClick}>
+      {showLikeAnimation && <div className="like-animation" aria-hidden="true">❤️</div>}
+      <div
+        className="progress-bar"
+        ref={progressBarRef}
+        onClick={handleProgressBarClick}
+        onMouseDown={handleProgressBarDragStart}
+        onMouseUp={handleProgressBarDragEnd}
+        onMouseLeave={handleProgressBarDragEnd}
+        onMouseMove={handleProgressBarDrag}
+        role="progressbar"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow={progress}
+      >
         <div className="progress" style={{ width: `${progress}%` }}></div>
       </div>
-      <div className="app-version">v{APP_VERSION}</div>
+      <div className="app-version" aria-label={`App version ${APP_VERSION}`}>v{APP_VERSION}</div>
     </div>
   );
 }
