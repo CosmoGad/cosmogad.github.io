@@ -14,6 +14,11 @@ const api = axios.create({
     }
 });
 
+api.interceptors.request.use(config => {
+    config.headers['X-Requested-With'] = 'XMLHttpRequest';
+    return config;
+});
+
 // Интерцептор для обработки ошибок
 api.interceptors.response.use(
     response => response,
