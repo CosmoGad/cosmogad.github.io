@@ -10,12 +10,16 @@ const api = axios.create({
     baseURL: API_URL,
     withCredentials: true,
     headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
     }
 });
 
+// Интерцептор для обработки OPTIONS запросов
 api.interceptors.request.use(config => {
-    config.headers['X-Requested-With'] = 'XMLHttpRequest';
+    if (config.method === 'options') {
+        config.headers['Access-Control-Request-Method'] = config.method;
+    }
     return config;
 });
 

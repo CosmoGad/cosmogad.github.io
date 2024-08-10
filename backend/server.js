@@ -16,33 +16,19 @@ console.log('WEBAPP_URL:', process.env.WEBAPP_URL);
 
 // Настройка CORS
 const corsOptions = {
-  origin: function (origin, callback) {
-    const allowedOrigins = ['http://localhost:3000', 'https://cosmogad.github.io'];
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: ['http://localhost:3000', 'https://cosmogad.github.io'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
 
+// Логирование запросов
 app.use((req, res, next) => {
-  console.log('Received request:', req.method, req.url);
-  console.log('Request headers:', req.headers);
-  next();
-});
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://cosmogad.github.io');
-  res.header('Access-Control-Allow-Credentials', true);
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json');
+  console.log('Request received:', req.method, req.url);
+  console.log('Request headers:', JSON.stringify(req.headers, null, 2));
+  console.log('CORS options:', JSON.stringify(corsOptions, null, 2));
   next();
 });
 
@@ -54,6 +40,12 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
+
+// Обработка OPTIONS запросов
+app.options('*', (req, res) => {
+  res.sendStatus(200);
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/videos', videoRoutes);
 app.use('/api/comments', commentRoutes);
@@ -63,6 +55,7 @@ app.get('/api/test', (req, res) => {
     res.json({ message: 'API is working' });
 });
 
+// Обработка ошибок CORS
 app.use((err, req, res, next) => {
   if (err.message === 'Not allowed by CORS') {
     res.status(403).json({ message: 'CORS error: Origin not allowed' });
