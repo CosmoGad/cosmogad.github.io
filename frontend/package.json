@@ -4,12 +4,11 @@
   "homepage": "https://cosmogad.github.io",
   "scripts": {
     "start": "react-scripts start",
-    "build": "echo Starting build && (if exist src (dir /s /b src) else (find src -type d && find src -type f)) && react-scripts build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-     "clean": "rm -rf node_modules && npm cache clean --force && npm install",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "deploy.bat"
   },
   "dependencies": {
     "axios": "^1.7.2",
@@ -35,7 +34,6 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "gh-pages": "^6.1.1"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   }
 }

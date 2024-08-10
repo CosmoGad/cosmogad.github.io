@@ -1,3 +1,5 @@
 node_modules
 .cache
-videos/ 
+videos/
+frontend/node_modules/
+frontend/build/
