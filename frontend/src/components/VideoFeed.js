@@ -6,7 +6,7 @@ import Comments from './Comments';
 import TokenInfo from './TokenInfo';
 import 'swiper/swiper.min.css';
 import '../styles/VideoFeed.css';
-import { getVideos, getUserData, updateTokenBalance } from '../api/api';
+import { getVideos, getUserData, updateTokenBalance, likeVideo, addComment } from '../api/api';
 import ErrorMessage from './ErrorMessage';
 
 SwiperCore.use([Mousewheel, Virtual]);
