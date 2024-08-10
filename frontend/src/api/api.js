@@ -1,12 +1,15 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+const API_URL = process.env.REACT_APP_API_URL;
+
+if (!API_URL) {
+  console.error('REACT_APP_API_URL is not set in the environment');
+}
 
 const api = axios.create({
     baseURL: API_URL,
     withCredentials: true
 });
-
 export const login = (userData) => api.post('/auth/login', userData);
 export const getVideos = () => api.get('/videos');
 export const addVideo = (videoData) => api.post('/videos', videoData);

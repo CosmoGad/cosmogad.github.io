@@ -50,7 +50,7 @@ app.get('/api/test', (req, res) => {
 });
 
 const corsOptions = {
-  origin: ' http://localhost:3000', 
+  origin: ['http://localhost:3000', 'https://cosmogad.github.io'],
   credentials: true,
   optionsSuccessStatus: 200
 };
