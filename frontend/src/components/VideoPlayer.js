@@ -1,11 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { FaHeart, FaComment, FaShare, FaCoins, FaVolumeMute, FaVolumeUp } from 'react-icons/fa';
 import { BsPlayFill } from 'react-icons/bs';
 import '../styles/VideoPlayer.css';
 import { getComments, addComment } from '../api/comments';
 import Comments from './Comments';
+import ErrorMessage from './ErrorMessage';
 
-const APP_VERSION = "1.3.97";
+const APP_VERSION = "1.3.98";
 
 function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, onTokenEarned, toggleComments, toggleTokenInfo, isLiked, toggleLike, likesCount, showComments, commentsCount, user }) {
   const [isPaused, setIsPaused] = useState(false);
@@ -13,11 +14,18 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
   const [progress, setProgress] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(false);
+  const [error, setError] = useState(null);
   const videoRef = useRef(null);
   const progressBarRef = useRef(null);
   const lastTapRef = useRef(0);
   const tapTimeoutRef = useRef(null);
   const [comments, setComments] = useState([]);
+
+  const handleCanPlay = useCallback(() => {
+    setIsVideoReady(true);
+    setError(null);
+  }, []);
 
   useEffect(() => {
     if (isActive) {
@@ -37,7 +45,7 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
 
   const handleVideoError = (error) => {
     console.error('Error loading video:', error);
-    alert(`Failed to load video: ${error.message}. Please check your internet connection and try again.`);
+    setError('Failed to load video. Please check your internet connection and try again.');
   };
 
   const handleAddComment = async (text) => {
@@ -55,42 +63,35 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
       setComments(prevComments => [...prevComments, newComment]);
     } catch (error) {
       console.error('Failed to add comment', error);
-      alert('Failed to add comment. Please try again.');
+      setError('Failed to add comment. Please try again.');
     }
   };
 
   useEffect(() => {
-  const videoElement = videoRef.current;
-  if (!videoElement) return;
+    const videoElement = videoRef.current;
+    if (!videoElement) return;
 
-  const playVideo = async () => {
-    if (isActive) {
-      try {
-        await videoElement.play();
-        setIsPaused(false);
-      } catch (error) {
-        console.error('Autoplay prevented:', error);
+    const playVideo = async () => {
+      if (isActive && isVideoReady) {
+        try {
+          await videoElement.play();
+          setIsPaused(false);
+        } catch (error) {
+          console.error('Autoplay prevented:', error);
+          setIsPaused(true);
+        }
+      } else {
+        videoElement.pause();
         setIsPaused(true);
       }
-    } else {
+    };
+
+    playVideo();
+
+    return () => {
       videoElement.pause();
-      setIsPaused(true);
-    }
-  };
-
-  playVideo();
-
-  const handleEnded = () => {
-    onVideoEnd();
-  };
-
-  videoElement.addEventListener('ended', handleEnded);
-
-  return () => {
-    videoElement.pause();
-    videoElement.removeEventListener('ended', handleEnded);
-  };
-}, [isActive, onVideoEnd]);
+    };
+  }, [isActive, isVideoReady]);
 
   const handleTimeUpdate = () => {
     if (videoRef.current && !isDragging) {
@@ -102,7 +103,9 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
   useEffect(() => {
     const checkNetwork = () => {
       if (!navigator.onLine) {
-        alert('You are offline. Please check your internet connection.');
+        setError('You are offline. Please check your internet connection.');
+      } else {
+        setError(null);
       }
     };
 
@@ -114,32 +117,6 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
       window.removeEventListener('offline', checkNetwork);
     };
   }, []);
-
-  useEffect(() => {
-    const videoElement = videoRef.current;
-    if (!videoElement) return;
-
-    const handleLoadError = () => {
-      console.error('Failed to load video:', video.url);
-    };
-    const logEvent = (event) => console.log(`Video event: ${event.type}`);
-
-    videoElement.addEventListener('loadstart', logEvent);
-    videoElement.addEventListener('progress', logEvent);
-    videoElement.addEventListener('canplay', logEvent);
-    videoElement.addEventListener('canplaythrough', logEvent);
-    videoElement.addEventListener('error', logEvent);
-    videoElement.addEventListener('error', handleLoadError);
-
-    return () => {
-      videoElement.removeEventListener('loadstart', logEvent);
-      videoElement.removeEventListener('progress', logEvent);
-      videoElement.removeEventListener('canplay', logEvent);
-      videoElement.removeEventListener('canplaythrough', logEvent);
-      videoElement.removeEventListener('error', logEvent);
-      videoElement.removeEventListener('error', handleLoadError);
-    };
-  }, [video.url]);
 
   const handleTap = (e) => {
     const now = Date.now();
@@ -159,14 +136,6 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
 
     lastTapRef.current = now;
   };
-
-  useEffect(() => {
-    const tg = window.Telegram?.WebApp;
-    if (tg) {
-      tg.expand();
-      tg.enableClosingConfirmation();
-    }
-  }, []);
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -216,26 +185,26 @@ function VideoPlayer({ video, onVideoEnd, currentIndex, onCommentAdd, isActive, 
   };
 
   return (
-    <div
-      className="video-player-container"
-      onClick={handleTap}
-    >
-    <video
-ref={videoRef}
-src={video.url}
-loop={false}
-playsInline
-webkit-playsinline="true"
-x-webkit-airplay="allow"
-preload="auto"
-muted={isMuted}
-onError={handleVideoError}
-onTimeUpdate={handleTimeUpdate}
-poster={video.thumbnailUrl}
->
-<source src={video.url} type="video/mp4" />
-Your browser does not support the video tag.
-</video>
+    <div className="video-player-container" onClick={handleTap}>
+      {error && <ErrorMessage message={error} />}
+      <video
+        ref={videoRef}
+        src={video.url}
+        loop={false}
+        playsInline
+        webkit-playsinline="true"
+        x-webkit-airplay="allow"
+        preload="auto"
+        muted={isMuted}
+        onCanPlay={handleCanPlay}
+        onError={handleVideoError}
+        onTimeUpdate={handleTimeUpdate}
+        onEnded={onVideoEnd}
+        poster={video.thumbnailUrl}
+      >
+        <source src={video.url} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
       <div className="video-overlay">
         {isPaused && <div className="play-pause-icon"><BsPlayFill /></div>}
         <div className="video-info">
@@ -243,77 +212,30 @@ Your browser does not support the video tag.
           <div className="video-description">{video.description}</div>
         </div>
         <div className="video-actions">
-          <button
-            className="action-button"
-            onClick={(e) => { e.stopPropagation(); toggleLike(); }}
-            aria-label={isLiked ? "Unlike video" : "Like video"}
-          >
+          <button className="action-button" onClick={toggleLike}>
             <FaHeart color={isLiked ? 'red' : 'white'} />
             <span className="action-count">{likesCount}</span>
           </button>
-          <button
-            className="action-button"
-            onClick={(e) => { e.stopPropagation(); toggleComments(); }}
-            aria-label={`Show comments (${commentsCount})`}
-          >
+          <button className="action-button" onClick={toggleComments}>
             <FaComment />
             <span className="action-count">{commentsCount}</span>
           </button>
-          <button
-            className="action-button"
-            onClick={(e) => { e.stopPropagation(); /* handle share */ }}
-            aria-label="Share video"
-          >
+          <button className="action-button">
             <FaShare />
           </button>
-          <button
-            className="action-button"
-            onClick={(e) => { e.stopPropagation(); toggleTokenInfo(); }}
-            aria-label="Show token info"
-          >
+          <button className="action-button" onClick={toggleTokenInfo}>
             <FaCoins />
           </button>
-          <button
-            className="action-button"
-            onClick={toggleMute}
-            aria-label={isMuted ? "Unmute video" : "Mute video"}
-          >
+          <button className="action-button" onClick={toggleMute}>
             {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
           </button>
         </div>
-        {showLikeAnimation && (
-          <div className="like-animation" aria-hidden="true">
-            <FaHeart color="red" size={100} />
-          </div>
-        )}
-        <div className="app-version">v{APP_VERSION}</div>
       </div>
-      <div
-        className="progress-bar"
-        ref={progressBarRef}
-        onClick={handleProgressBarClick}
-        onMouseDown={handleProgressBarDragStart}
-        onMouseUp={handleProgressBarDragEnd}
-        onMouseLeave={handleProgressBarDragEnd}
-        onMouseMove={handleProgressBarDrag}
-        onTouchStart={handleProgressBarDragStart}
-        onTouchEnd={handleProgressBarDragEnd}
-        onTouchMove={handleProgressBarDrag}
-        role="slider"
-        aria-label="Video progress"
-        aria-valuemin="0"
-        aria-valuemax="100"
-        aria-valuenow={progress}
-      >
-        <div className="progress" style={{width: `${progress}%`}}></div>
+      {showLikeAnimation && <div className="like-animation">❤️</div>}
+      <div className="progress-bar" ref={progressBarRef} onClick={handleProgressBarClick}>
+        <div className="progress" style={{ width: `${progress}%` }}></div>
       </div>
-      {showComments && (
-        <Comments
-          comments={comments}
-          onClose={toggleComments}
-          onAddComment={(text) => handleAddComment(text)}
-        />
-      )}
+      <div className="app-version">v{APP_VERSION}</div>
     </div>
   );
 }

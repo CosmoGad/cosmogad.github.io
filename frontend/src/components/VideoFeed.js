@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import VideoPlayer from './VideoPlayer';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Mousewheel, Virtual } from 'swiper';
@@ -29,6 +29,8 @@ function VideoFeed({ user }) {
   const [showTokenInfo, setShowTokenInfo] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const swiperRef = useRef(null);
 
   const [videoInfo, setVideoInfo] = useState({});
 
@@ -44,7 +46,6 @@ function VideoFeed({ user }) {
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        // Замените этот код на реальный запрос к API, когда он будет готов
         const fetchedVideos = videoUrls.map((url, index) => ({
           _id: index,
           url,
@@ -61,6 +62,15 @@ function VideoFeed({ user }) {
 
     fetchVideos();
   }, []);
+
+  useEffect(() => {
+    if (!loading && isInitialLoad) {
+      setIsInitialLoad(false);
+      if (swiperRef.current && swiperRef.current.swiper) {
+        swiperRef.current.swiper.slideTo(0, 0);
+      }
+    }
+  }, [loading, isInitialLoad]);
 
   useEffect(() => {
     const preloadVideos = (startIndex, count) => {
@@ -122,6 +132,10 @@ function VideoFeed({ user }) {
     });
   }, []);
 
+  const handleSlideChange = useCallback((swiper) => {
+    setCurrentIndex(swiper.activeIndex);
+  }, []);
+
   if (loading) {
     return <div className="loading-message">Loading videos...</div>;
   }
@@ -137,13 +151,15 @@ function VideoFeed({ user }) {
   return (
     <div className="video-feed-container">
       <Swiper
+        ref={swiperRef}
         direction={'vertical'}
         slidesPerView={1}
         spaceBetween={0}
         mousewheel={true}
         virtual
         className="video-feed-swiper"
-        onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
+        onSlideChange={handleSlideChange}
+        initialSlide={0}
       >
         {videos.map((video, index) => (
           <SwiperSlide key={video._id} virtualIndex={index}>
