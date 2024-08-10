@@ -14,43 +14,38 @@ const port = process.env.PORT || 3001;
 console.log('TELEGRAM_BOT_TOKEN:', process.env.TELEGRAM_BOT_TOKEN);
 console.log('WEBAPP_URL:', process.env.WEBAPP_URL);
 
-const corsOptions = {
+const allowedOrigins = ['http://localhost:3000', 'https://cosmogad.github.io'];
+
+app.use(cors({
   origin: function (origin, callback) {
-    const allowedOrigins = ['http://localhost:3000', 'https://cosmogad.github.io'];
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
     }
+    return callback(null, true);
   },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-};
-
-app.use(cors(corsOptions));
+  credentials: true
+}));
 
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', req.headers.origin);
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-  } else {
-    next();
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
   }
-});
-
-app.use((req, res, next) => {
-  console.log('Request received:', req.method, req.url);
-  console.log('Request headers:', JSON.stringify(req.headers, null, 2));
-  console.log('Response headers:', JSON.stringify(res.getHeaders(), null, 2));
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', true);
   next();
 });
 
 app.use(express.json());
+
+app.use((req, res, next) => {
+  console.log('Request received:', req.method, req.url);
+  console.log('Request headers:', JSON.stringify(req.headers, null, 2));
+  next();
+});
 
 app.use('/api/auth', authRoutes);
 app.use('/api/videos', videoRoutes);
