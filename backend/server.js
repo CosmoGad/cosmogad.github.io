@@ -14,7 +14,17 @@ const port = process.env.PORT || 3001;
 console.log('TELEGRAM_BOT_TOKEN:', process.env.TELEGRAM_BOT_TOKEN);
 console.log('WEBAPP_URL:', process.env.WEBAPP_URL);
 
-app.use(cors());
+// Настройка CORS
+const corsOptions = {
+  origin: ['http://localhost:3000', 'https://cosmogad.github.io'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Обработка preflight запросов
+
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
@@ -34,28 +44,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/api/comments', (req, res, next) => {
-  commentRoutes(req, res, (err) => {
-    if (err) {
-      console.error('Error in comments route:', err);
-      res.status(500).json({ error: 'Internal Server Error' });
-    } else {
-      next();
-    }
-  });
-});
-
 app.get('/api/test', (req, res) => {
     res.json({ message: 'API is working' });
 });
-
-const corsOptions = {
-  origin: ['http://localhost:3000', 'https://cosmogad.github.io'],
-  credentials: true,
-  optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions));
 
 const server = app.listen(port, async () => {
     console.log(`Сервер запущен на порту ${port}`);

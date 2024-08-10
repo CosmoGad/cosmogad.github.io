@@ -8,8 +8,26 @@ if (!API_URL) {
 
 const api = axios.create({
     baseURL: API_URL,
-    withCredentials: true
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json'
+    }
 });
+
+// Интерцептор для обработки ошибок
+api.interceptors.response.use(
+    response => response,
+    error => {
+        console.error('API Error:', error);
+        if (error.response) {
+            console.error('Response data:', error.response.data);
+            console.error('Response status:', error.response.status);
+            console.error('Response headers:', error.response.headers);
+        }
+        return Promise.reject(error);
+    }
+);
+
 export const login = (userData) => api.post('/auth/login', userData);
 export const getVideos = () => api.get('/videos');
 export const addVideo = (videoData) => api.post('/videos', videoData);
