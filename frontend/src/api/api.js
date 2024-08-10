@@ -8,17 +8,18 @@ if (!API_URL) {
 
 const api = axios.create({
     baseURL: API_URL,
-    // withCredentials: true,  // Временно закомментировано для тестирования
+    withCredentials: true,
     headers: {
         'Content-Type': 'application/json',
         'X-Requested-With': 'XMLHttpRequest'
     }
 });
 
-api.interceptors.request.use(config => {
-    config.headers['Access-Control-Allow-Origin'] = 'https://cosmogad.github.io';
-    return config;
-});
+// Удалите этот интерцептор, так как он вызывает проблемы
+// api.interceptors.request.use(config => {
+//     config.headers['Access-Control-Allow-Origin'] = 'https://cosmogad.github.io';
+//     return config;
+// });
 
 api.interceptors.response.use(
     response => response,

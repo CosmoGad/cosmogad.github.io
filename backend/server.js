@@ -15,14 +15,7 @@ console.log('TELEGRAM_BOT_TOKEN:', process.env.TELEGRAM_BOT_TOKEN);
 console.log('WEBAPP_URL:', process.env.WEBAPP_URL);
 
 const corsOptions = {
-  origin: (origin, callback) => {
-    const allowedOrigins = ['http://localhost:3000', 'https://cosmogad.github.io'];
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: ['http://localhost:3000', 'https://cosmogad.github.io'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
@@ -31,11 +24,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (corsOptions.origin(origin, () => {})) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Origin', 'https://cosmogad.github.io');
+  res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
 
@@ -53,13 +43,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('Cache-Control', 'max-age=31536000, immutable');
-  res.setHeader('Content-Security-Policy', "frame-ancestors 'self'");
-  next();
-});
-
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
@@ -69,14 +52,6 @@ app.use('/api/users', userRoutes);
 
 app.get('/api/test', (req, res) => {
     res.json({ message: 'API is working' });
-});
-
-app.use((err, req, res, next) => {
-  if (err.message === 'Not allowed by CORS') {
-    res.status(403).json({ message: 'CORS error: Origin not allowed' });
-  } else {
-    next(err);
-  }
 });
 
 const server = app.listen(port, async () => {
