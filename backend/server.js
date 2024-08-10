@@ -16,19 +16,19 @@ console.log('WEBAPP_URL:', process.env.WEBAPP_URL);
 
 const allowedOrigins = ['http://localhost:3000', 'https://cosmogad.github.io'];
 
-app.use(cors({
+const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
     }
-    return callback(null, true);
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
