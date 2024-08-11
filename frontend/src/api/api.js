@@ -29,7 +29,7 @@ api.interceptors.response.use(
 );
 
 export const login = (userData) => api.post('/api/auth/login', userData);
-export const getVideos = () => api.get('/videos').then(response => response.data.videos);
+export const getVideos = () => api.get('/api/videos');
 export const addVideo = (videoData) => api.post('/api/videos', videoData);
 export const likeVideo = (videoId) => api.post(`/api/videos/${videoId}/like`);
 export const getComments = (videoId) => api.get(`/api/comments/${videoId}`);
