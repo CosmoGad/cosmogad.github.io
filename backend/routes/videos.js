@@ -29,8 +29,9 @@ router.get('/', async (req, res) => {
     const total = await Video.countDocuments(query);
 
     console.log('Sending videos:', videos);
+
     res.json({
-      videos,
+      videos: videos, // Это гарантированно будет массив
       currentPage: page,
       totalPages: Math.ceil(total / limit),
       totalVideos: total

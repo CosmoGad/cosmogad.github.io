@@ -7,12 +7,12 @@ if (!API_URL) {
 }
 
 const api = axios.create({
-    baseURL: API_URL,
-    withCredentials: false,
-    headers: {
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-    }
+  baseURL: API_URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true'
+  }
 });
 
 api.interceptors.response.use(
@@ -29,7 +29,7 @@ api.interceptors.response.use(
 );
 
 export const login = (userData) => api.post('/api/auth/login', userData);
-export const getVideos = () => api.get('/api/videos');
+export const getVideos = () => api.get('/videos').then(response => response.data.videos);
 export const addVideo = (videoData) => api.post('/api/videos', videoData);
 export const likeVideo = (videoId) => api.post(`/api/videos/${videoId}/like`);
 export const getComments = (videoId) => api.get(`/api/comments/${videoId}`);

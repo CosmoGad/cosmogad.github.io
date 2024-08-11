@@ -24,30 +24,30 @@ function VideoFeed({ user }) {
   const swiperRef = useRef(null);
 
   const fetchInitialData = async () => {
-    try {
-      const [videosResponse, userData] = await Promise.all([
-        getVideos(),
-        getUserData()
-      ]);
+  try {
+    const [videosResponse, userData] = await Promise.all([
+      getVideos(),
+      getUserData()
+    ]);
 
-      console.log('Videos response:', videosResponse);
+    console.log('Videos response:', videosResponse);
 
-      if (Array.isArray(videosResponse.data)) {
-        setVideos(videosResponse.data);
-      } else {
-        console.error('Received non-array videos data:', videosResponse.data);
-        setVideos([]);
-      }
-
-      setTokenBalance(userData.data.tokenBalance);
-      setLikes(userData.data.likes || {});
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching initial data:', error);
-      setError('Failed to load initial data. Please try again later.');
-      setLoading(false);
+    if (Array.isArray(videosResponse)) {
+      setVideos(videosResponse);
+    } else {
+      console.error('Received non-array videos data:', videosResponse);
+      setVideos([]);
     }
-  };
+
+    setTokenBalance(userData.tokenBalance);
+    setLikes(userData.likes || {});
+    setLoading(false);
+  } catch (error) {
+    console.error('Error fetching initial data:', error);
+    setError('Failed to load initial data. Please try again later.');
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchInitialData();
