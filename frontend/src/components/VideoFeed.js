@@ -30,18 +30,21 @@ function VideoFeed({ user }) {
         getUserData()
       ]);
 
-      console.log('Videos response:', videosResponse.data);
-      console.log('User data response:', userData.data);
+      console.log('Videos response:', videosResponse);
+      console.log('User data response:', userData);
 
-      if (Array.isArray(videosResponse.data.videos)) {
+      if (videosResponse.data && Array.isArray(videosResponse.data.videos)) {
         setVideos(videosResponse.data.videos);
       } else {
-        console.error('Received non-array videos data:', videosResponse.data);
+        console.error('Received invalid videos data:', videosResponse.data);
         setVideos([]);
       }
 
-      setTokenBalance(userData.data.tokenBalance || 0);
-      setLikes(userData.data.likes || {});
+      if (userData.data) {
+        setTokenBalance(userData.data.tokenBalance || 0);
+        setLikes(userData.data.likes || {});
+      }
+
       setLoading(false);
     } catch (error) {
       console.error('Error fetching initial data:', error);

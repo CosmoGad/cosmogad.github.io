@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Video = require('../models/Video');
-const authMiddleware = require('../middleware/auth');
+const authMiddleware = require('../middleware/auth'); 
 
 router.get('/', async (req, res) => {
   try {
@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
     console.log('Sending videos:', videos);
 
     res.json({
-      videos: videos, // Это гарантированно будет массив
+      videos,
       currentPage: page,
       totalPages: Math.ceil(total / limit),
       totalVideos: total
@@ -41,6 +41,7 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: 'Error fetching videos' });
   }
 });
+
 
 router.post('/', authMiddleware, async (req, res) => {
     const video = new Video({

@@ -3,12 +3,13 @@ const router = express.Router();
 const User = require('../models/User');
 const authMiddleware = require('../middleware/auth');
 
-router.get('/', async (req, res) => {
+router.get('/me', authMiddleware, async (req, res) => {
   try {
-    const users = await User.find({}, 'telegramId username');
-    res.json(users);
+    const user = await User.findById(req.user.id).select('-password');
+    res.json(user);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error fetching user data:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
