@@ -23,24 +23,33 @@ function VideoFeed({ user }) {
   const [error, setError] = useState(null);
   const swiperRef = useRef(null);
 
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        const [videosResponse, userData] = await Promise.all([
-          getVideos(),
-          getUserData()
-        ]);
-        setVideos(videosResponse.data);
-        setTokenBalance(userData.data.tokenBalance);
-        setLikes(userData.data.likes || {});
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching initial data:', error);
-        setError('Failed to load initial data. Please try again later.');
-        setLoading(false);
-      }
-    };
+  const fetchInitialData = async () => {
+    try {
+      const [videosResponse, userData] = await Promise.all([
+        getVideos(),
+        getUserData()
+      ]);
 
+      console.log('Videos response:', videosResponse);
+
+      if (Array.isArray(videosResponse.data)) {
+        setVideos(videosResponse.data);
+      } else {
+        console.error('Received non-array videos data:', videosResponse.data);
+        setVideos([]);
+      }
+
+      setTokenBalance(userData.data.tokenBalance);
+      setLikes(userData.data.likes || {});
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching initial data:', error);
+      setError('Failed to load initial data. Please try again later.');
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchInitialData();
   }, []);
 
@@ -105,6 +114,15 @@ function VideoFeed({ user }) {
 
   if (error) {
     return <ErrorMessage message={error} />;
+  }
+
+  if (!Array.isArray(videos)) {
+    console.error('Videos is not an array:', videos);
+    return <div>Error loading videos. Please try again later.</div>;
+  }
+
+  if (videos.length === 0) {
+    return <div>No videos available</div>;
   }
 
   return (
