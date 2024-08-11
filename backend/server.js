@@ -16,14 +16,8 @@ console.log('WEBAPP_URL:', process.env.WEBAPP_URL);
 
 const allowedOrigins = ['http://localhost:3000', 'https://cosmogad.github.io'];
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+cconst corsOptions = {
+  origin: 'https://cosmogad.github.io',
   credentials: true,
   optionsSuccessStatus: 200
 };
@@ -31,14 +25,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-
+  res.header('Access-Control-Allow-Origin', 'https://cosmogad.github.io');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   if (req.method === 'OPTIONS') {
     return res.sendStatus(204);
   }
@@ -48,9 +38,9 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 app.use((req, res, next) => {
-  console.log('Request received:', req.method, req.url);
-  console.log('Request headers:', JSON.stringify(req.headers, null, 2));
-  console.log('Response headers:', JSON.stringify(res.getHeaders(), null, 2));
+  console.log('Request:', req.method, req.url);
+  console.log('Origin:', req.headers.origin);
+  console.log('CORS headers:', res.getHeaders());
   next();
 });
 
